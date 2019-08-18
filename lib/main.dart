@@ -12,6 +12,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
+        textTheme: TextTheme(
+          body2: TextStyle(
+            fontSize: 18.0,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
       ),
       home: HomeRoute(),
     );
