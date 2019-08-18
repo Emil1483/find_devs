@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './routes/home_route.dart';
+import './routes/auth_route.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,7 +20,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: HomeRoute(),
+      routes: {
+        "/": (BuildContext context) => HomeRoute(),
+        AuthRoute.routeName: (BuildContext context) => AuthRoute(),
+      },
     );
   }
 }
