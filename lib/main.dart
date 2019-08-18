@@ -18,12 +18,17 @@ class MyApp extends StatelessWidget {
             fontSize: 18.0,
             fontWeight: FontWeight.w400,
           ),
+          title: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 22.0,
+          ),
         ),
       ),
       routes: {
-        "/": (BuildContext context) => HomeRoute(),
-        AuthRoute.routeName: (BuildContext context) => AuthRoute(),
+        //"/": (BuildContext context) => HomeRoute(),
+        //AuthRoute.routeName: (BuildContext context) => AuthRoute(),
       },
+      home: AuthRoute(),
     );
   }
 }
