@@ -90,6 +90,12 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
         final formState = _formKey.currentState;
         formState.save();
         if (!formState.validate()) return;
+        if (await user.signUp(
+          email: _email,
+          password: _password,
+        )) {
+          Navigator.pushReplacementNamed(context, HomeRoute.routeName);
+        }
       },
     );
   }

@@ -17,6 +17,7 @@ class User with ChangeNotifier {
         password: password,
       );
       _user = result.user;
+      print("Logged in as ${_user.displayName}");
       return true;
     } catch (e) {
       _user = null;
