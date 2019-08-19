@@ -110,7 +110,7 @@ class AuthRoute extends StatelessWidget {
         onTap: () {
           Feedback.forLongPress(context);
         },
-        child: Padding(
+        child: Container(
           padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
           child: Text(
             "Create an Account",
