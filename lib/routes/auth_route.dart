@@ -6,8 +6,8 @@ class AuthRoute extends StatelessWidget {
   Widget _buildLogo() {
     return Container(
       alignment: Alignment.center,
-      height: 144.0,
-      margin: EdgeInsets.symmetric(vertical: 16.0),
+      height: 177.0,
+      margin: EdgeInsets.symmetric(vertical: 22.0),
       child: Image(
         image: AssetImage("assets/missing_asset.png"),
       ),
@@ -17,24 +17,24 @@ class AuthRoute extends StatelessWidget {
   List<Widget> _buildFormFields() {
     return <Widget>[
       TextFormField(
-        validator: (String input) {
-          if (input.isEmpty) return "Please type email";
-          return null;
-        },
         decoration: InputDecoration(
           labelText: "Email",
           icon: Icon(Icons.mail),
         ),
-      ),
-      TextFormField(
         validator: (String input) {
           if (input.isEmpty) return "Please type email";
           return null;
         },
+      ),
+      TextFormField(
         decoration: InputDecoration(
           labelText: "Password",
           icon: Icon(Icons.lock),
         ),
+        validator: (String input) {
+          if (input.isEmpty) return "Please type email";
+          return null;
+        },
         obscureText: true,
       ),
     ];
