@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class AuthRoute extends StatelessWidget {
   static const routeName = "/auth";
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   Widget _buildLogo() {
     return Container(
       alignment: Alignment.center,
@@ -17,25 +19,32 @@ class AuthRoute extends StatelessWidget {
   List<Widget> _buildFormFields() {
     return <Widget>[
       TextFormField(
+        keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
           labelText: "Email",
           icon: Icon(Icons.mail),
         ),
         validator: (String input) {
-          if (input.isEmpty) return "Please type email";
+          if (input.isEmpty) return "Please type in your email";
+          if (!RegExp(
+            r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+          ).hasMatch(input)) return "Email must be valid";
+
           return null;
         },
       ),
       TextFormField(
+        obscureText: true,
         decoration: InputDecoration(
           labelText: "Password",
           icon: Icon(Icons.lock),
         ),
         validator: (String input) {
-          if (input.isEmpty) return "Please type email";
+          if (input.isEmpty) return "Please type in your password";
+          if (input.length < 6) return "Password must be 6 characters or more";
+
           return null;
         },
-        obscureText: true,
       ),
     ];
   }
@@ -46,7 +55,10 @@ class AuthRoute extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text("Login"),
-      onPressed: () {},
+      onPressed: () {
+        final FormState formState = _formKey.currentState;
+        if (!formState.validate()) return;
+      },
     );
   }
 
@@ -106,6 +118,7 @@ class AuthRoute extends StatelessWidget {
         ),
       ),
       body: Form(
+        key: _formKey,
         child: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 22.0),
