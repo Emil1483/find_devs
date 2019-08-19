@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class HomeRoute extends StatelessWidget {
+  static const String routeName = "/home";
+
   Widget _buildListTile({
     @required String text,
     @required Function onTap,

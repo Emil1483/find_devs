@@ -31,8 +31,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
         routes: {
-          //"/": (BuildContext context) => HomeRoute(),
-          //AuthRoute.routeName: (BuildContext context) => AuthRoute(),
+          HomeRoute.routeName: (BuildContext context) => HomeRoute(),
         },
         home: AuthRoute(),
       ),
