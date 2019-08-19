@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/user.dart';
 
 class AuthRoute extends StatelessWidget {
   static const routeName = "/auth";
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
 
   Widget _buildLogo() {
     return Container(
@@ -19,6 +24,7 @@ class AuthRoute extends StatelessWidget {
   List<Widget> _buildFormFields() {
     return <Widget>[
       TextFormField(
+        controller: _email,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
           labelText: "Email",
@@ -34,6 +40,7 @@ class AuthRoute extends StatelessWidget {
         },
       ),
       TextFormField(
+        controller: _password,
         obscureText: true,
         decoration: InputDecoration(
           labelText: "Password",
@@ -49,15 +56,20 @@ class AuthRoute extends StatelessWidget {
     ];
   }
 
-  Widget _buildLogin() {
+  Widget _buildLogin(BuildContext context) {
+    User user = Provider.of<User>(context, listen: false);
     return RaisedButton(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text("Login"),
       onPressed: () {
-        final FormState formState = _formKey.currentState;
+        final formState = _formKey.currentState;
         if (!formState.validate()) return;
+        user.signInWithEmail(
+          email: _email.text,
+          password: _password.text,
+        );
       },
     );
   }
@@ -128,7 +140,7 @@ class AuthRoute extends StatelessWidget {
                 _buildLogo(),
                 ..._buildFormFields(),
                 SizedBox(height: 22.0),
-                _buildLogin(),
+                _buildLogin(context),
                 _buildGoogleLogin(),
                 _buildCreateAcc(context),
               ],
