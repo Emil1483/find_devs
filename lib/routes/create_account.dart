@@ -49,7 +49,7 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
       ),
       TextFormField(
         obscureText: true,
-        onSaved: (String str) => _password = str,
+        onFieldSubmitted: (String str) => _password = str,
         decoration: InputDecoration(
           labelText: "Password",
           icon: Icon(Icons.lock),
@@ -69,8 +69,9 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
           icon: Icon(Icons.lock),
         ),
         validator: (String input) {
-          if (input.isEmpty) return "Please type in your password";
-          if (input.length < 6) return "Password must be 6 characters or more";
+          if (_password.isEmpty) return null;
+          if (_password.length < 6) return null;
+          if (input != _password) return "Passwords does not match";
 
           return null;
         },
@@ -87,8 +88,8 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
       child: Text("Continue"),
       onPressed: () async {
         final formState = _formKey.currentState;
-        if (!formState.validate()) return;
         formState.save();
+        if (!formState.validate()) return;
       },
     );
   }
