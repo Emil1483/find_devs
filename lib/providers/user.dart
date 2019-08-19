@@ -17,12 +17,17 @@ class User with ChangeNotifier {
         password: password,
       );
       _user = result.user;
-      print("Login succesfull");
+      print("Logged in as ${_user.displayName}");
       return true;
     } catch (e) {
       _user = null;
       print(e.message);
       return false;
     }
+  }
+
+  void logOut() {
+    _auth.signOut();
+    _user = null;
   }
 }

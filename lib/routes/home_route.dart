@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/user.dart';
+import './auth_route.dart';
 
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
@@ -12,12 +16,12 @@ class HomeRoute extends StatelessWidget {
     return ListTile(
       leading: icon,
       title: Text(text),
-      onTap: () {},
+      onTap: onTap,
       subtitle: subtitle == null ? null : Text(subtitle),
     );
   }
 
-  Widget _buildDrawer() {
+  Widget _buildDrawer(BuildContext context) {
     return Drawer(
       child: Column(
         children: <Widget>[
@@ -44,9 +48,13 @@ class HomeRoute extends StatelessWidget {
             text: "Privacy Policy",
           ),
           _buildListTile(
-            onTap: () {},
             text: "Logout",
             icon: Icon(Icons.exit_to_app),
+            onTap: () {
+              print("logout");
+              Provider.of<User>(context, listen: false).logOut();
+              Navigator.pushReplacementNamed(context, "/");
+            },
           ),
         ],
       ),
@@ -69,7 +77,7 @@ class HomeRoute extends StatelessWidget {
           ),
         ],
       ),
-      drawer: _buildDrawer(),
+      drawer: _buildDrawer(context),
     );
   }
 }
