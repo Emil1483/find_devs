@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
-import './auth_route.dart';
 
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";

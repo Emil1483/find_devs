@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 import './home_route.dart';
+import './create_account.dart';
 
 class AuthRoute extends StatelessWidget {
   static const routeName = "/auth";
@@ -109,6 +110,7 @@ class AuthRoute extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           Feedback.forLongPress(context);
+          Navigator.pushNamed(context, CreateAccountRoute.routeName);
         },
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
