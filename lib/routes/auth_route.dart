@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
+import './home_route.dart';
 
 class AuthRoute extends StatelessWidget {
   static const routeName = "/auth";
@@ -63,13 +64,15 @@ class AuthRoute extends StatelessWidget {
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text("Login"),
-      onPressed: () {
+      onPressed: () async {
         final formState = _formKey.currentState;
         if (!formState.validate()) return;
-        user.signInWithEmail(
+        if (await user.signInWithEmail(
           email: _email.text,
           password: _password.text,
-        );
+        )) {
+          Navigator.pushReplacementNamed(context, HomeRoute.routeName);
+        }
       },
     );
   }

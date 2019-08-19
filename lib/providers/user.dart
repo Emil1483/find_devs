@@ -7,7 +7,7 @@ class User with ChangeNotifier {
 
   FirebaseUser get user => _user;
 
-  Future<void> signInWithEmail({
+  Future<bool> signInWithEmail({
     @required String email,
     @required String password,
   }) async {
@@ -18,9 +18,11 @@ class User with ChangeNotifier {
       );
       _user = result.user;
       print("Login succesfull");
+      return true;
     } catch (e) {
-      print(e.message);
       _user = null;
+      print(e.message);
+      return false;
     }
   }
 }
