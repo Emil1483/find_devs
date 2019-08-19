@@ -5,12 +5,18 @@ import '../providers/user.dart';
 import './home_route.dart';
 import './create_account.dart';
 
-class AuthRoute extends StatelessWidget {
+class AuthRoute extends StatefulWidget {
   static const routeName = "/auth";
 
+  @override
+  _AuthRouteState createState() => _AuthRouteState();
+}
+
+class _AuthRouteState extends State<AuthRoute> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _password = TextEditingController();
+
+  String _email;
+  String _password;
 
   Widget _buildLogo() {
     return Container(
@@ -26,8 +32,8 @@ class AuthRoute extends StatelessWidget {
   List<Widget> _buildFormFields() {
     return <Widget>[
       TextFormField(
-        controller: _email,
         keyboardType: TextInputType.emailAddress,
+        onSaved: (String str) => _email = str,
         decoration: InputDecoration(
           labelText: "Email",
           icon: Icon(Icons.mail),
@@ -42,8 +48,8 @@ class AuthRoute extends StatelessWidget {
         },
       ),
       TextFormField(
-        controller: _password,
         obscureText: true,
+        onSaved: (String str) => _password = str,
         decoration: InputDecoration(
           labelText: "Password",
           icon: Icon(Icons.lock),
@@ -68,9 +74,11 @@ class AuthRoute extends StatelessWidget {
       onPressed: () async {
         final formState = _formKey.currentState;
         if (!formState.validate()) return;
+        formState.save();
+
         if (await user.signInWithEmail(
-          email: _email.text,
-          password: _password.text,
+          email: _email,
+          password: _password,
         )) {
           Navigator.pushReplacementNamed(context, HomeRoute.routeName);
         }
