@@ -16,7 +16,6 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
 
   String _email;
   String _password;
-  String _passwordConfirm;
 
   Widget _buildLogo() {
     return Container(
@@ -63,7 +62,6 @@ class _CreateAccountRouteState extends State<CreateAccountRoute> {
       ),
       TextFormField(
         obscureText: true,
-        onSaved: (String str) => _passwordConfirm = str,
         decoration: InputDecoration(
           labelText: "Confirm Password",
           icon: Icon(Icons.lock),
