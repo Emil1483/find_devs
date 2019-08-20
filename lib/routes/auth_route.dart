@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/user.dart';
 import './home_route.dart';
 import './create_account.dart';
+import '../ui_elements/shrink.dart';
+import '../ui_elements/transitioner.dart';
 
 class AuthRoute extends StatefulWidget {
   static const routeName = "/auth";
@@ -12,11 +14,23 @@ class AuthRoute extends StatefulWidget {
   _AuthRouteState createState() => _AuthRouteState();
 }
 
-class _AuthRouteState extends State<AuthRoute> {
+class _AuthRouteState extends State<AuthRoute>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String _email;
   String _password;
+
+  AnimationController _controller;
+
+  @override
+  initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 200),
+    );
+  }
 
   Widget _buildLogo() {
     return Container(
@@ -87,43 +101,68 @@ class _AuthRouteState extends State<AuthRoute> {
   }
 
   Widget _buildGoogleLogin() {
-    return RaisedButton(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
-      ),
-      onPressed: () {},
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Image.asset(
-            "assets/google_logo.png",
-            width: 22.0,
+    return Shrink(
+      animation: _controller,
+      child: Container(
+        height: 38,
+        child: RaisedButton(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30.0),
           ),
-          SizedBox(width: 8.0),
-          Text(
-            "Sign in with Google",
-            style: TextStyle(
-              color: Colors.black54,
-              fontWeight: FontWeight.w600,
-            ),
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Image.asset(
+                "assets/google_logo.png",
+                width: 22.0,
+              ),
+              SizedBox(width: 8.0),
+              Text(
+                "Sign in with Google",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildCreateAcc(BuildContext context) {
+  Widget _buildButtomFull(BuildContext context) {
+    return Transitioner(
+      animation: _controller,
+      child1: _buildButtom(
+        context,
+        "Create an Account",
+        () {
+          Feedback.forLongPress(context);
+          _controller.forward();
+        },
+      ),
+      child2: _buildButtom(
+        context,
+        "Login Using Existing Account",
+        () {
+          Feedback.forLongPress(context);
+          _controller.reverse();
+        },
+      ),
+    );
+  }
+
+  Widget _buildButtom(BuildContext context, String text, Function onTap) {
     return Center(
       child: GestureDetector(
-        onTap: () {
-          Feedback.forLongPress(context);
-          Navigator.pushNamed(context, CreateAccountRoute.routeName);
-        },
+        onTap: onTap,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 18.0, vertical: 12.0),
           child: Text(
-            "Create an Account",
+            text,
             style: TextStyle(
               color: Colors.white,
             ),
@@ -155,7 +194,7 @@ class _AuthRouteState extends State<AuthRoute> {
                 SizedBox(height: 22.0),
                 _buildLogin(context),
                 _buildGoogleLogin(),
-                _buildCreateAcc(context),
+                _buildButtomFull(context),
               ],
             ),
           ),
