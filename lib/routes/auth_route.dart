@@ -28,7 +28,7 @@ class _AuthRouteState extends State<AuthRoute>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 200),
+      duration: Duration(milliseconds: 400),
     );
   }
 

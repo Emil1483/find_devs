@@ -23,7 +23,7 @@ class Shrink extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (BuildContext context, _) {
-        final double value = animation.value;
+        final double value = Curves.easeInOut.transform(animation.value);
         return Container(
           constraints: BoxConstraints.tightFor(
             height: height != null ? height * (1 - value) : null,

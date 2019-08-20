@@ -12,7 +12,7 @@ class Transitioner extends StatelessWidget {
     @required this.animation,
     @required this.child1,
     @required this.child2,
-    this.curve = Curves.easeInOutCubic,
+    this.curve = Curves.easeInOut,
   })  : assert(animation != null),
         assert(child1 != null),
         assert(child2 != null);
@@ -27,7 +27,7 @@ class Transitioner extends StatelessWidget {
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.identity()
-            ..rotateX((math.cos(2 * math.pi * value) / 2 - 0.5) * math.pi / 2),
+            ..rotateX(((0.5 - value).abs() * 2 - 1) * math.pi / 2),
           child: value <= 0.5 ? child1 : child2,
         );
       },
