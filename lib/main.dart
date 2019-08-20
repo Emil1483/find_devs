@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import './routes/home_route.dart';
 import './routes/auth_route.dart';
-import './routes/create_account.dart';
 import './providers/user.dart';
 
 void main() => runApp(MyApp());
@@ -33,7 +32,6 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           HomeRoute.routeName: (_) => HomeRoute(),
-          CreateAccountRoute.routeName: (_) => CreateAccountRoute(),
         },
         home: AuthRoute(),
       ),

@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 import './home_route.dart';
-import './create_account.dart';
 import '../ui_elements/shrink.dart';
 import '../ui_elements/transitioner.dart';
 
@@ -20,7 +19,6 @@ class _AuthRouteState extends State<AuthRoute>
 
   String _email;
   String _password;
-  GlobalKey<ShrinkState> _passwordConfirmKey = GlobalKey<ShrinkState>();
 
   AnimationController _controller;
 
@@ -64,34 +62,30 @@ class _AuthRouteState extends State<AuthRoute>
           return null;
         },
       ),
-      Builder(
-        builder: (BuildContext context) {
-          WidgetsBinding.instance.addPostFrameCallback(
-            (_) => _passwordConfirmKey.currentState.setHeight(
-              context.size.height,
-            ),
-          );
-          return TextFormField(
-            obscureText: true,
-            onSaved: (String str) => _password = str,
-            decoration: InputDecoration(
-              labelText: "Password",
-              icon: Icon(Icons.lock),
-            ),
-            validator: (String input) {
-              if (input.isEmpty) return "Please type in your password";
-              if (input.length < 6)
-                return "Password must be 6 characters or more";
+      TextFormField(
+        obscureText: true,
+        onSaved: (String str) => _password = str,
+        decoration: InputDecoration(
+          labelText: "Password",
+          icon: Icon(Icons.lock),
+        ),
+        validator: (String input) {
+          if (input.isEmpty) return "Please type in your password";
+          if (input.length < 6) return "Password must be 6 characters or more";
 
-              return null;
-            },
-          );
+          return null;
         },
       ),
-      Shrink(
-        key: _passwordConfirmKey,
-        animation: _controller,
-        reverse: true,
+      SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset(-1.2, 0.0),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Curves.easeInOutCubic,
+          ),
+        ),
         child: TextFormField(
           obscureText: true,
           decoration: InputDecoration(
