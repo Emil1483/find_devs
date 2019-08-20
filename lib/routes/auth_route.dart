@@ -20,8 +20,11 @@ class _AuthRouteState extends State<AuthRoute>
 
   String _email;
   String _password;
+  GlobalKey<ShrinkState> _passwordConfirmKey = GlobalKey<ShrinkState>();
 
   AnimationController _controller;
+
+  bool get _login => _controller.value < 0.5;
 
   @override
   initState() {
@@ -61,19 +64,49 @@ class _AuthRouteState extends State<AuthRoute>
           return null;
         },
       ),
-      TextFormField(
-        obscureText: true,
-        onSaved: (String str) => _password = str,
-        decoration: InputDecoration(
-          labelText: "Password",
-          icon: Icon(Icons.lock),
-        ),
-        validator: (String input) {
-          if (input.isEmpty) return "Please type in your password";
-          if (input.length < 6) return "Password must be 6 characters or more";
+      Builder(
+        builder: (BuildContext context) {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _passwordConfirmKey.currentState.setHeight(
+              context.size.height,
+            ),
+          );
+          return TextFormField(
+            obscureText: true,
+            onSaved: (String str) => _password = str,
+            decoration: InputDecoration(
+              labelText: "Password",
+              icon: Icon(Icons.lock),
+            ),
+            validator: (String input) {
+              if (input.isEmpty) return "Please type in your password";
+              if (input.length < 6)
+                return "Password must be 6 characters or more";
 
-          return null;
+              return null;
+            },
+          );
         },
+      ),
+      Shrink(
+        key: _passwordConfirmKey,
+        animation: _controller,
+        reverse: true,
+        child: TextFormField(
+          obscureText: true,
+          decoration: InputDecoration(
+            labelText: "Confirm Password",
+            icon: Icon(Icons.lock),
+          ),
+          validator: (String input) {
+            if (_login) return null;
+            if (_password.isEmpty) return null;
+            if (_password.length < 6) return null;
+            if (input != _password) return "Passwords does not match";
+
+            return null;
+          },
+        ),
       ),
     ];
   }
@@ -84,16 +117,25 @@ class _AuthRouteState extends State<AuthRoute>
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
-      child: Text("Login"),
+      child: Transitioner(
+        animation: _controller,
+        child1: Text("Login"),
+        child2: Text("Continue"),
+      ),
       onPressed: () async {
         final formState = _formKey.currentState;
-        if (!formState.validate()) return;
         formState.save();
+        if (!formState.validate()) return;
 
-        if (await user.signInWithEmail(
-          email: _email,
-          password: _password,
-        )) {
+        if (_login
+            ? await user.signInWithEmail(
+                email: _email,
+                password: _password,
+              )
+            : await user.signUp(
+                email: _email,
+                password: _password,
+              )) {
           Navigator.pushReplacementNamed(context, HomeRoute.routeName);
         }
       },
