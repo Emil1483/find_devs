@@ -137,6 +137,7 @@ class _AuthRouteState extends State<AuthRoute>
   }
 
   Widget _buildGoogleLogin() {
+    User user = Provider.of<User>(context, listen: false);
     return Shrink(
       animation: _controller,
       child: Container(
@@ -146,7 +147,11 @@ class _AuthRouteState extends State<AuthRoute>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30.0),
           ),
-          onPressed: () {},
+          onPressed: () async {
+            if (await user.googleSignIn()) {
+              Navigator.pushReplacementNamed(context, HomeRoute.routeName);
+            }
+          },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[

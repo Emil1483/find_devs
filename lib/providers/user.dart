@@ -63,6 +63,7 @@ class User with ChangeNotifier {
       print("Logged in as ${_user.displayName}");
       return true;
     } catch (e) {
+      print("Could not login");
       _user = null;
       print(e.message);
       return false;
