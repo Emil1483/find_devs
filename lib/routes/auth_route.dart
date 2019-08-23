@@ -5,6 +5,7 @@ import '../providers/user.dart';
 import './home_route.dart';
 import '../ui_elements/shrink.dart';
 import '../ui_elements/transitioner.dart';
+import '../ui_elements/alert_dialog.dart';
 
 class AuthRoute extends StatefulWidget {
   static const routeName = "/auth";
@@ -107,6 +108,7 @@ class _AuthRouteState extends State<AuthRoute>
 
   Widget _buildLogin(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
+
     return RaisedButton(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
@@ -121,16 +123,27 @@ class _AuthRouteState extends State<AuthRoute>
         formState.save();
         if (!formState.validate()) return;
 
-        if (_login
-            ? await user.signInWithEmail(
-                email: _email,
-                password: _password,
-              )
-            : await user.signUp(
-                email: _email,
-                password: _password,
-              )) {
+        AuthError error;
+        if (_login) {
+          error = await user.signInWithEmail(
+            email: _email,
+            password: _password,
+          );
+        } else {
+          error = await user.signUp(
+            email: _email,
+            password: _password,
+          );
+        }
+
+        if (error == null) {
           Navigator.pushReplacementNamed(context, HomeRoute.routeName);
+        } else {
+          showAlertDialog(
+            context,
+            title: _login ? "Could not login" : "Could not create account",
+            content: getErrorMessage(error),
+          );
         }
       },
     );
@@ -148,7 +161,8 @@ class _AuthRouteState extends State<AuthRoute>
             borderRadius: BorderRadius.circular(30.0),
           ),
           onPressed: () async {
-            if (await user.googleSignIn()) {
+            AuthError error = await user.googleSignIn();
+            if (error == null) {
               Navigator.pushReplacementNamed(context, HomeRoute.routeName);
             }
           },
