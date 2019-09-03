@@ -39,6 +39,7 @@ class User with ChangeNotifier {
 
   User() {
     autoLogin();
+    // Use https://www.youtube.com/watch?v=r9GgggvonqA to create account settings
   }
 
   Future<void> autoLogin() async {
