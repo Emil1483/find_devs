@@ -43,7 +43,7 @@ class User with ChangeNotifier {
 
   Future<void> autoLogin() async {
     FirebaseUser user = await _auth.currentUser();
-    if (user == null) return; //TODO: Implement login with username and password using shared preferences
+    if (user == null) return;
     _user = user;
     _waiting = false;
     notifyListeners();
