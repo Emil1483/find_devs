@@ -32,7 +32,22 @@ class User with ChangeNotifier {
   final GoogleSignIn _google = GoogleSignIn();
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  bool _waiting = true;
+
   FirebaseUser get user => _user;
+  bool get waiting => _waiting;
+
+  User() {
+    autoLogin();
+  }
+
+  Future<void> autoLogin() async {
+    FirebaseUser user = await _auth.currentUser();
+    if (user == null) return; //TODO: Implement login with username and password using shared preferences
+    _user = user;
+    _waiting = false;
+    notifyListeners();
+  }
 
   Future<AuthError> signUp({
     @required String email,
