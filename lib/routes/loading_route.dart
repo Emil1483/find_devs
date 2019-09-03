@@ -26,8 +26,12 @@ class LoadingRoute extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(),
-        body: Center(
-          child: CircularProgressIndicator(),
+        body: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(64.0),
+          child: Image.asset(
+            "assets/missing_asset.png",
+          ),
         ),
       ),
     );
