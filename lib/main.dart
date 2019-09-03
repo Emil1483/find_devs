@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './routes/home_route.dart';
 import './routes/auth_route.dart';
 import './routes/loading_route.dart';
+import './routes/account_route.dart';
 import './providers/user.dart';
 
 void main() => runApp(MyApp());
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         routes: {
           HomeRoute.routeName: (_) => HomeRoute(),
           AuthRoute.routeName: (_) => AuthRoute(),
+          AccountRoute.routeName: (_) => AccountRoute(),
         },
         home: LoadingRoute(),
       ),

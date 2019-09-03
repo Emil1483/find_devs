@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 import './auth_route.dart';
+import './account_route.dart';
 
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
@@ -73,7 +74,9 @@ class HomeRoute extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.settings),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(AccountRoute.routeName);
+            },
           ),
         ],
       ),
