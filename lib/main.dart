@@ -26,6 +26,12 @@ class MyApp extends StatelessWidget {
           toggleableActiveColor: Color(0xFFF4A342),
           appBarTheme: AppBarTheme(
             color: Color(0xFF222A33),
+            textTheme: TextTheme(
+              title: TextStyle(
+                fontWeight: FontWeight.w300,
+                fontSize: 22.0,
+              ),
+            ),
           ),
           textTheme: TextTheme(
             body2: TextStyle(
@@ -33,8 +39,8 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
             title: TextStyle(
-              fontWeight: FontWeight.w300,
-              fontSize: 22.0,
+              fontWeight: FontWeight.w200,
+              fontSize: 26.0,
             ),
           ),
         ),

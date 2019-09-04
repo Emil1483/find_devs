@@ -233,12 +233,7 @@ class _AuthRouteState extends State<AuthRoute>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Login",
-          style: Theme.of(context).textTheme.title,
-        ),
-      ),
+      appBar: AppBar(title: Text("Login")),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
