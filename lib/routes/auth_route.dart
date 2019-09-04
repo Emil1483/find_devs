@@ -108,8 +108,11 @@ class _AuthRouteState extends State<AuthRoute>
 
   Widget _buildLogin(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
+    ThemeData theme = Theme.of(context);
 
     return RaisedButton(
+      color: theme.accentColor,
+      textColor: theme.canvasColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
