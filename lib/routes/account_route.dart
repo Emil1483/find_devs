@@ -87,15 +87,13 @@ class _AccountRouteState extends State<AccountRoute> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: RaisedButton(
+        color: theme.accentColor,
+        textColor: theme.canvasColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
         onPressed: () {},
-        child: Text(
-          "Save",
-          style: TextStyle(color: theme.canvasColor),
-        ),
-        color: theme.accentColor,
+        child: Text("Save"),
       ),
     );
   }
