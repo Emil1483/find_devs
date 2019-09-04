@@ -65,12 +65,38 @@ class _AccountRouteState extends State<AccountRoute> {
           ),
         ),
         TextFormField(
+          maxLines: 5,
+          decoration: InputDecoration(
+            labelText: "About you",
+            alignLabelWithHint: true,
+            icon: Icon(Icons.description),
+          ),
+        ),
+        TextFormField(
           decoration: InputDecoration(
             labelText: "City",
             icon: Icon(Icons.location_city),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSave() {
+    ThemeData theme = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        onPressed: () {},
+        child: Text(
+          "Save",
+          style: TextStyle(color: theme.canvasColor),
+        ),
+        color: theme.accentColor,
+      ),
     );
   }
 
@@ -134,6 +160,7 @@ class _AccountRouteState extends State<AccountRoute> {
           _text("Tell me about yourself"),
           _buildFormFields(),
           _buildHide(),
+          _buildSave(),
         ],
       ),
     );

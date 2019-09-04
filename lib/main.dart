@@ -21,6 +21,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,
+          canvasColor: Color(0xFF161B21),
+          accentColor: Color(0xFFF4A342),
+          toggleableActiveColor: Color(0xFFF4A342),
+          appBarTheme: AppBarTheme(
+            color: Color(0xFF222A33),
+          ),
           textTheme: TextTheme(
             body2: TextStyle(
               fontSize: 18.0,
