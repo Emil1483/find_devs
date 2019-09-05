@@ -171,6 +171,7 @@ class User with ChangeNotifier {
     UserData userData = UserData.fromMap(result.data);
     if (userData.username == null && _user.displayName != null) {
       userData.username = _user.displayName;
+      updateUserData(userData);
     }
     return userData;
   }
