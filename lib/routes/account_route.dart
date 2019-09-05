@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/user.dart';
+import '../ui_elements/alert_dialog.dart';
 
 class AccountRoute extends StatefulWidget {
   static const String routeName = "/account";
@@ -8,10 +12,15 @@ class AccountRoute extends StatefulWidget {
 }
 
 class _AccountRouteState extends State<AccountRoute> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   bool _dev = false;
   bool _work = false;
   bool _collab = false;
   bool _hideFromMaps = false;
+  String _username;
+  String _about;
+  String _city;
 
   Widget _buildListTile({
     @required Function onTap,
@@ -59,6 +68,7 @@ class _AccountRouteState extends State<AccountRoute> {
     return Column(
       children: <Widget>[
         TextFormField(
+          onSaved: (String val) => _username = val,
           decoration: InputDecoration(
             labelText: "Username",
             icon: Icon(Icons.person),
@@ -66,6 +76,7 @@ class _AccountRouteState extends State<AccountRoute> {
         ),
         TextFormField(
           maxLines: 5,
+          onSaved: (String val) => _about = val,
           decoration: InputDecoration(
             labelText: "About you",
             alignLabelWithHint: true,
@@ -73,6 +84,7 @@ class _AccountRouteState extends State<AccountRoute> {
           ),
         ),
         TextFormField(
+          onSaved: (String val) => _city = val,
           decoration: InputDecoration(
             labelText: "City",
             icon: Icon(Icons.location_city),
@@ -92,7 +104,20 @@ class _AccountRouteState extends State<AccountRoute> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        onPressed: () {},
+        onPressed: () {
+          _formKey.currentState.save();
+          Provider.of<User>(context, listen: false).updateUserData(
+            UserData(
+              about: _about,
+              city: _city,
+              hideFromMaps: _hideFromMaps,
+              lookForDevs: _dev,
+              lookForWork: _work,
+              lookToCollab: _collab,
+              username: _username,
+            ),
+          );
+        },
         child: Text("Save"),
       ),
     );
@@ -149,17 +174,20 @@ class _AccountRouteState extends State<AccountRoute> {
       appBar: AppBar(
         title: Text("Account Settings"),
       ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-        children: <Widget>[
-          _buildLogo(),
-          _text("Why did you get this app?"),
-          _buildLookingFor(),
-          _text("Tell me about yourself"),
-          _buildFormFields(),
-          _buildHide(),
-          _buildSave(),
-        ],
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
+          children: <Widget>[
+            _buildLogo(),
+            _text("Why did you get this app?"),
+            _buildLookingFor(),
+            _text("Tell me about yourself"),
+            _buildFormFields(),
+            _buildHide(),
+            _buildSave(),
+          ],
+        ),
       ),
     );
   }

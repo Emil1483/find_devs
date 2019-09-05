@@ -132,18 +132,6 @@ class User with ChangeNotifier {
     _user = null;
   }
 
-  /*
-
-  final bool lookForDevs;
-  final bool lookForWork;
-  final bool lookToCollab;
-  final String username;
-  final String about;
-  final String city;
-  final bool hideFromMaps;
-
-  */
-
   Future<bool> updateUserData(UserData data) async {
     try {
       DocumentReference ref = _db.collection("users").document(_user.uid);
@@ -157,6 +145,7 @@ class User with ChangeNotifier {
         "username": data.username,
         "about": data.about,
         "hodeFromMaps": data.hideFromMaps,
+        "city": data.city,
       });
       return true;
     } catch (e) {
