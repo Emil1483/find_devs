@@ -16,19 +16,19 @@ class UserData {
   bool lookForDevs;
   bool lookForWork;
   bool lookToCollab;
+  bool hideFromMaps;
   String username;
   String about;
   String city;
-  bool hideFromMaps;
 
   UserData({
-    this.lookForDevs,
-    this.lookForWork,
-    this.lookToCollab,
+    this.lookForDevs = false,
+    this.lookForWork = false,
+    this.lookToCollab = false,
     this.username,
     this.about,
     this.city,
-    this.hideFromMaps,
+    this.hideFromMaps = false,
   });
 
   factory UserData.fromMap(Map<String, dynamic> map) {
