@@ -168,7 +168,11 @@ class User with ChangeNotifier {
 
   Future<UserData> getUserData() async {
     final result = await _db.collection("users").document(_user.uid).get();
-    return UserData.fromMap(result.data);
+    UserData userData = UserData.fromMap(result.data);
+    if (userData.username == null && _user.displayName != null) {
+      userData.username = _user.displayName;
+    }
+    return userData;
   }
 
   AuthError _getErrorType(PlatformException e) {
