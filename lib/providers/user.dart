@@ -1,7 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum AuthError {
   UserNotFound,
@@ -9,6 +10,26 @@ enum AuthError {
   PasswordNotValid,
   NetworkError,
   Unknown,
+}
+
+class UserData {
+  final bool lookForDevs;
+  final bool lookForWork;
+  final bool lookToCollab;
+  final String username;
+  final String about;
+  final String city;
+  final bool hideFromMaps;
+
+  UserData({
+    @required this.lookForDevs,
+    @required this.lookForWork,
+    @required this.lookToCollab,
+    @required this.username,
+    @required this.about,
+    @required this.city,
+    @required this.hideFromMaps,
+  });
 }
 
 String getErrorMessage(AuthError error) {
@@ -30,7 +51,8 @@ String getErrorMessage(AuthError error) {
 class User with ChangeNotifier {
   FirebaseUser _user;
   final GoogleSignIn _google = GoogleSignIn();
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final Firestore _db = Firestore.instance;
 
   bool _waiting = true;
 
@@ -108,6 +130,39 @@ class User with ChangeNotifier {
   void logOut() {
     _auth.signOut();
     _user = null;
+  }
+
+  /*
+
+  final bool lookForDevs;
+  final bool lookForWork;
+  final bool lookToCollab;
+  final String username;
+  final String about;
+  final String city;
+  final bool hideFromMaps;
+
+  */
+
+  Future<bool> updateUserData(UserData data) async {
+    try {
+      DocumentReference ref = _db.collection("users").document(_user.uid);
+
+      ref.setData({
+        "uid": _user.uid,
+        "email": _user.email,
+        "lookForDevs": data.lookForDevs,
+        "lookForWork": data.lookForWork,
+        "lookToCollab": data.lookToCollab,
+        "username": data.username,
+        "about": data.about,
+        "hodeFromMaps": data.hideFromMaps,
+      });
+      return true;
+    } catch (e) {
+      print("could not update user data: $e");
+      return false;
+    }
   }
 
   AuthError _getErrorType(PlatformException e) {
