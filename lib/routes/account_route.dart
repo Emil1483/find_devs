@@ -12,8 +12,6 @@ class AccountRoute extends StatefulWidget {
 }
 
 class _AccountRouteState extends State<AccountRoute> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   bool _dev = false;
   bool _work = false;
   bool _collab = false;
@@ -21,6 +19,8 @@ class _AccountRouteState extends State<AccountRoute> {
   String _username;
   String _about;
   String _city;
+
+  bool _edited = false;
 
   Widget _buildListTile({
     @required Function onTap,
@@ -44,19 +44,28 @@ class _AccountRouteState extends State<AccountRoute> {
       children: <Widget>[
         _buildListTile(
           icon: Icon(Icons.person),
-          onTap: () => _dev = !_dev,
+          onTap: () {
+            _dev = !_dev;
+            setState(() => _edited = true);
+          },
           text: "Looking for developers",
           value: _dev,
         ),
         _buildListTile(
           icon: Icon(Icons.work),
-          onTap: () => _work = !_work,
+          onTap: () {
+            _work = !_work;
+            setState(() => _edited = true);
+          },
           text: "Looking for work",
           value: _work,
         ),
         _buildListTile(
           icon: Icon(Icons.code),
-          onTap: () => _collab = !_collab,
+          onTap: () {
+            _collab = !_collab;
+            setState(() => _edited = true);
+          },
           text: "Looking to collaborate",
           value: _collab,
         ),
@@ -67,24 +76,33 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget _buildFormFields() {
     return Column(
       children: <Widget>[
-        TextFormField(
-          onSaved: (String val) => _username = val,
+        TextField(
+          onChanged: (String val) {
+            _username = val;
+            setState(() => _edited = true);
+          },
           decoration: InputDecoration(
             labelText: "Username",
             icon: Icon(Icons.person),
           ),
         ),
-        TextFormField(
+        TextField(
           maxLines: 5,
-          onSaved: (String val) => _about = val,
+          onChanged: (String val) {
+            _about = val;
+            setState(() => _edited = true);
+          },
           decoration: InputDecoration(
             labelText: "About you",
             alignLabelWithHint: true,
             icon: Icon(Icons.description),
           ),
         ),
-        TextFormField(
-          onSaved: (String val) => _city = val,
+        TextField(
+          onChanged: (String val) {
+            _city = val;
+            setState(() => _edited = true);
+          },
           decoration: InputDecoration(
             labelText: "City",
             icon: Icon(Icons.location_city),
@@ -96,6 +114,7 @@ class _AccountRouteState extends State<AccountRoute> {
 
   Widget _buildSave() {
     ThemeData theme = Theme.of(context);
+
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
       child: RaisedButton(
@@ -104,20 +123,31 @@ class _AccountRouteState extends State<AccountRoute> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        onPressed: () {
-          _formKey.currentState.save();
-          Provider.of<User>(context, listen: false).updateUserData(
-            UserData(
-              about: _about,
-              city: _city,
-              hideFromMaps: _hideFromMaps,
-              lookForDevs: _dev,
-              lookForWork: _work,
-              lookToCollab: _collab,
-              username: _username,
-            ),
-          );
-        },
+        onPressed: _edited
+            ? () async {
+                final User user = Provider.of<User>(context, listen: false);
+                final bool result = await user.updateUserData(
+                  UserData(
+                    about: _about,
+                    city: _city,
+                    hideFromMaps: _hideFromMaps,
+                    lookForDevs: _dev,
+                    lookForWork: _work,
+                    lookToCollab: _collab,
+                    username: _username,
+                  ),
+                );
+                if (!result) {
+                  showAlertDialog(
+                    context,
+                    title: "Could not save data",
+                    content: "Please try again",
+                  );
+                } else {
+                  setState(() => _edited = false);
+                }
+              }
+            : null,
         child: Text("Save"),
       ),
     );
@@ -135,20 +165,24 @@ class _AccountRouteState extends State<AccountRoute> {
   }
 
   Widget _buildHide() {
+    Function onTap = () {
+      setState(() {
+        _hideFromMaps = !_hideFromMaps;
+        _edited = true;
+      });
+    };
     return Container(
       height: 36,
       alignment: Alignment.centerRight,
       child: GestureDetector(
-        onTap: () {
-          setState(() => _hideFromMaps = !_hideFromMaps);
-        },
+        onTap: onTap,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Text("Hide from maps"),
             Switch(
-              onChanged: (bool value) => setState(() => _hideFromMaps = value),
+              onChanged: (bool value) => onTap(),
               value: _hideFromMaps,
             ),
           ],
@@ -174,20 +208,17 @@ class _AccountRouteState extends State<AccountRoute> {
       appBar: AppBar(
         title: Text("Account Settings"),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-          children: <Widget>[
-            _buildLogo(),
-            _text("Why did you get this app?"),
-            _buildLookingFor(),
-            _text("Tell me about yourself"),
-            _buildFormFields(),
-            _buildHide(),
-            _buildSave(),
-          ],
-        ),
+      body: ListView(
+        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
+        children: <Widget>[
+          _buildLogo(),
+          _text("Why did you get this app?"),
+          _buildLookingFor(),
+          _text("Tell me about yourself"),
+          _buildFormFields(),
+          _buildHide(),
+          _buildSave(),
+        ],
       ),
     );
   }

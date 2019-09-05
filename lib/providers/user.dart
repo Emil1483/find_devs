@@ -144,7 +144,7 @@ class User with ChangeNotifier {
         "lookToCollab": data.lookToCollab,
         "username": data.username,
         "about": data.about,
-        "hodeFromMaps": data.hideFromMaps,
+        "hideFromMaps": data.hideFromMaps,
         "city": data.city,
       });
       return true;
