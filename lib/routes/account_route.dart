@@ -12,15 +12,27 @@ class AccountRoute extends StatefulWidget {
 }
 
 class _AccountRouteState extends State<AccountRoute> {
-  bool _dev = false;
-  bool _work = false;
-  bool _collab = false;
-  bool _hideFromMaps = false;
-  String _username;
-  String _about;
-  String _city;
-
+  UserData _userData;
+  TextEditingController _username;
+  TextEditingController _about;
+  TextEditingController _city;
   bool _edited = false;
+  bool _loading = true;
+
+  @override
+  initState() {
+    super.initState();
+    getUser();
+  }
+
+  void getUser() async {
+    final User user = Provider.of<User>(context, listen: false);
+    _userData = await user.getUserData();
+    _username = TextEditingController(text: _userData.username);
+    _about = TextEditingController(text: _userData.about);
+    _city = TextEditingController(text: _userData.city);
+    setState(() => _loading = false);
+  }
 
   Widget _buildListTile({
     @required Function onTap,
@@ -45,29 +57,29 @@ class _AccountRouteState extends State<AccountRoute> {
         _buildListTile(
           icon: Icon(Icons.person),
           onTap: () {
-            _dev = !_dev;
+            _userData.lookForDevs = !_userData.lookForDevs;
             setState(() => _edited = true);
           },
           text: "Looking for developers",
-          value: _dev,
+          value: _userData.lookForDevs,
         ),
         _buildListTile(
           icon: Icon(Icons.work),
           onTap: () {
-            _work = !_work;
+            _userData.lookForWork = !_userData.lookForWork;
             setState(() => _edited = true);
           },
           text: "Looking for work",
-          value: _work,
+          value: _userData.lookForWork,
         ),
         _buildListTile(
           icon: Icon(Icons.code),
           onTap: () {
-            _collab = !_collab;
+            _userData.lookToCollab = !_userData.lookToCollab;
             setState(() => _edited = true);
           },
           text: "Looking to collaborate",
-          value: _collab,
+          value: _userData.lookToCollab,
         ),
       ],
     );
@@ -77,8 +89,9 @@ class _AccountRouteState extends State<AccountRoute> {
     return Column(
       children: <Widget>[
         TextField(
+          controller: _username,
           onChanged: (String val) {
-            _username = val;
+            _userData.username = val;
             setState(() => _edited = true);
           },
           decoration: InputDecoration(
@@ -88,8 +101,9 @@ class _AccountRouteState extends State<AccountRoute> {
         ),
         TextField(
           maxLines: 5,
+          controller: _about,
           onChanged: (String val) {
-            _about = val;
+            _userData.about = val;
             setState(() => _edited = true);
           },
           decoration: InputDecoration(
@@ -99,8 +113,9 @@ class _AccountRouteState extends State<AccountRoute> {
           ),
         ),
         TextField(
+          controller: _city,
           onChanged: (String val) {
-            _city = val;
+            _userData.city = val;
             setState(() => _edited = true);
           },
           decoration: InputDecoration(
@@ -126,17 +141,7 @@ class _AccountRouteState extends State<AccountRoute> {
         onPressed: _edited
             ? () async {
                 final User user = Provider.of<User>(context, listen: false);
-                final bool result = await user.updateUserData(
-                  UserData(
-                    about: _about,
-                    city: _city,
-                    hideFromMaps: _hideFromMaps,
-                    lookForDevs: _dev,
-                    lookForWork: _work,
-                    lookToCollab: _collab,
-                    username: _username,
-                  ),
-                );
+                final bool result = await user.updateUserData(_userData);
                 if (!result) {
                   showAlertDialog(
                     context,
@@ -167,7 +172,7 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget _buildHide() {
     Function onTap = () {
       setState(() {
-        _hideFromMaps = !_hideFromMaps;
+        _userData.hideFromMaps = !_userData.hideFromMaps;
         _edited = true;
       });
     };
@@ -183,7 +188,7 @@ class _AccountRouteState extends State<AccountRoute> {
             Text("Hide from maps"),
             Switch(
               onChanged: (bool value) => onTap(),
-              value: _hideFromMaps,
+              value: _userData.hideFromMaps,
             ),
           ],
         ),
@@ -204,6 +209,12 @@ class _AccountRouteState extends State<AccountRoute> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading)
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     return Scaffold(
       appBar: AppBar(
         title: Text("Account Settings"),

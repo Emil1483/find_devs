@@ -13,23 +13,35 @@ enum AuthError {
 }
 
 class UserData {
-  final bool lookForDevs;
-  final bool lookForWork;
-  final bool lookToCollab;
-  final String username;
-  final String about;
-  final String city;
-  final bool hideFromMaps;
+  bool lookForDevs;
+  bool lookForWork;
+  bool lookToCollab;
+  String username;
+  String about;
+  String city;
+  bool hideFromMaps;
 
   UserData({
-    @required this.lookForDevs,
-    @required this.lookForWork,
-    @required this.lookToCollab,
-    @required this.username,
-    @required this.about,
-    @required this.city,
-    @required this.hideFromMaps,
+    this.lookForDevs,
+    this.lookForWork,
+    this.lookToCollab,
+    this.username,
+    this.about,
+    this.city,
+    this.hideFromMaps,
   });
+
+  factory UserData.fromMap(Map<String, dynamic> map) {
+    return UserData(
+      username: map["username"],
+      about: map["about"],
+      city: map["city"],
+      hideFromMaps: map["hideFromMaps"],
+      lookForDevs: map["lookForDevs"],
+      lookForWork: map["lookForWork"],
+      lookToCollab: map["lookToCollab"],
+    );
+  }
 }
 
 String getErrorMessage(AuthError error) {
@@ -152,6 +164,11 @@ class User with ChangeNotifier {
       print("could not update user data: $e");
       return false;
     }
+  }
+
+  Future<UserData> getUserData() async {
+    final result = await _db.collection("users").document(_user.uid).get();
+    return UserData.fromMap(result.data);
   }
 
   AuthError _getErrorType(PlatformException e) {
