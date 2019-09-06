@@ -37,20 +37,16 @@ class _AccountRouteState extends State<AccountRoute> {
 
   void getUser() async {
     final User user = Provider.of<User>(context, listen: false);
-    try {
-      _userData = await user.getUserData();
 
-      final onChanged = () => setState(() => _edited = true);
-      _username = TextEditingController(text: _userData.username)
-        ..addListener(onChanged);
-      _about = TextEditingController(text: _userData.about)
-        ..addListener(onChanged);
-      _city = TextEditingController(text: _userData.city)
-        ..addListener(onChanged);
-    } catch (e) {
-      _userData = UserData();
-      print("could not get user data: $e");
-    }
+    _userData = await user.getUserData();
+
+    final onChanged = () => setState(() => _edited = true);
+    _username = TextEditingController(text: _userData.username)
+      ..addListener(onChanged);
+    _about = TextEditingController(text: _userData.about)
+      ..addListener(onChanged);
+    _city = TextEditingController(text: _userData.city)..addListener(onChanged);
+
     setState(() => _loading = false);
   }
 

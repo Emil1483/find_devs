@@ -33,13 +33,13 @@ class UserData {
 
   factory UserData.fromMap(Map<String, dynamic> map) {
     return UserData(
-      username: map["username"],
-      about: map["about"],
-      city: map["city"],
-      hideFromMaps: map["hideFromMaps"],
-      lookForDevs: map["lookForDevs"],
-      lookForWork: map["lookForWork"],
-      lookToCollab: map["lookToCollab"],
+      username: map["username"] ?? null,
+      about: map["about"] ?? null,
+      city: map["city"] ?? null,
+      hideFromMaps: map["hideFromMaps"] ?? false,
+      lookForDevs: map["lookForDevs"] ?? false,
+      lookForWork: map["lookForWork"] ?? false,
+      lookToCollab: map["lookToCollab"] ?? false,
     );
   }
 }
@@ -167,13 +167,21 @@ class User with ChangeNotifier {
   }
 
   Future<UserData> getUserData() async {
-    final result = await _db.collection("users").document(_user.uid).get();
-    UserData userData = UserData.fromMap(result.data);
-    if (userData.username == null && _user.displayName != null) {
-      userData.username = _user.displayName;
+    try {
+      final result = await _db.collection("users").document(_user.uid).get();
+
+      UserData userData = UserData.fromMap(result.data);
+      if (userData.username == null || userData.username.isEmpty) {
+        userData.username = _user.displayName;
+      }
       updateUserData(userData);
+      return userData;
+    } catch (e) {
+      print("could not get user data: $e");
+      final userData = UserData(username: _user.displayName);
+      updateUserData(userData);
+      return userData;
     }
-    return userData;
   }
 
   AuthError _getErrorType(PlatformException e) {
