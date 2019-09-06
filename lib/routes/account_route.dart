@@ -12,6 +12,8 @@ class AccountRoute extends StatefulWidget {
 }
 
 class _AccountRouteState extends State<AccountRoute> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   UserData _userData;
   TextEditingController _username;
   TextEditingController _about;
@@ -25,13 +27,26 @@ class _AccountRouteState extends State<AccountRoute> {
     getUser();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _username.dispose();
+    _about.dispose();
+    _city.dispose();
+  }
+
   void getUser() async {
     final User user = Provider.of<User>(context, listen: false);
     try {
       _userData = await user.getUserData();
-      _username = TextEditingController(text: _userData.username);
-      _about = TextEditingController(text: _userData.about);
-      _city = TextEditingController(text: _userData.city);
+
+      final onChanged = () => setState(() => _edited = true);
+      _username = TextEditingController(text: _userData.username)
+        ..addListener(onChanged);
+      _about = TextEditingController(text: _userData.about)
+        ..addListener(onChanged);
+      _city = TextEditingController(text: _userData.city)
+        ..addListener(onChanged);
     } catch (e) {
       _userData = UserData();
       print("could not get user data: $e");
@@ -93,35 +108,39 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget _buildFormFields() {
     return Column(
       children: <Widget>[
-        TextField(
+        TextFormField(
           controller: _username,
-          onChanged: (String val) {
-            _userData.username = val;
-            setState(() => _edited = true);
+          onSaved: (String val) {
+            _userData.username = val.trim();
           },
           decoration: InputDecoration(
             labelText: "Username",
             icon: Icon(Icons.person),
           ),
+          validator: (String val) {
+            if (val == null || val.isEmpty || val == " " * val.length) {
+              return "Please choose a username";
+            }
+            return null;
+          },
         ),
-        TextField(
+        TextFormField(
           maxLines: 5,
           controller: _about,
-          onChanged: (String val) {
-            _userData.about = val;
-            setState(() => _edited = true);
+          onSaved: (String val) {
+            _userData.about = val.trim();
           },
+          maxLength: 300,
           decoration: InputDecoration(
             labelText: "About you",
             alignLabelWithHint: true,
             icon: Icon(Icons.description),
           ),
         ),
-        TextField(
+        TextFormField(
           controller: _city,
-          onChanged: (String val) {
-            _userData.city = val;
-            setState(() => _edited = true);
+          onSaved: (String val) {
+            _userData.city = val.trim();
           },
           decoration: InputDecoration(
             labelText: "City",
@@ -145,6 +164,8 @@ class _AccountRouteState extends State<AccountRoute> {
         ),
         onPressed: _edited
             ? () async {
+                if (!_formKey.currentState.validate()) return;
+                _formKey.currentState.save();
                 final User user = Provider.of<User>(context, listen: false);
                 final bool result = await user.updateUserData(_userData);
                 if (!result) {
@@ -224,17 +245,20 @@ class _AccountRouteState extends State<AccountRoute> {
       appBar: AppBar(
         title: Text("Account Settings"),
       ),
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
-        children: <Widget>[
-          _buildLogo(),
-          _text("Why did you get this app?"),
-          _buildLookingFor(),
-          _text("Tell me about yourself"),
-          _buildFormFields(),
-          _buildHide(),
-          _buildSave(),
-        ],
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 12.0),
+          children: <Widget>[
+            _buildLogo(),
+            _text("Why did you get this app?"),
+            _buildLookingFor(),
+            _text("Tell me about yourself"),
+            _buildFormFields(),
+            _buildHide(),
+            _buildSave(),
+          ],
+        ),
       ),
     );
   }
