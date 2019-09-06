@@ -8,7 +8,8 @@ import './account_route.dart';
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
 
-  Widget _buildListTile({
+  Widget _buildListTile(
+    BuildContext context, {
     @required String text,
     @required Function onTap,
     Widget icon = const Icon(Icons.lock),
@@ -17,7 +18,10 @@ class HomeRoute extends StatelessWidget {
     return ListTile(
       leading: icon,
       title: Text(text),
-      onTap: onTap,
+      onTap: () {
+        Navigator.pop(context);
+        onTap();
+      },
       subtitle: subtitle == null ? null : Text(subtitle),
     );
   }
@@ -34,21 +38,33 @@ class HomeRoute extends StatelessWidget {
             ),
           ),
           _buildListTile(
+            context,
             onTap: () {},
             text: "Find Devs",
             icon: Icon(Icons.account_circle),
           ),
           _buildListTile(
+            context,
             onTap: () {},
             text: "Projects",
             subtitle: "Contract or collaboration",
             icon: Icon(Icons.code),
           ),
           _buildListTile(
+            context,
+            onTap: () {
+              Navigator.of(context).pushNamed(AccountRoute.routeName);
+            },
+            text: "Account Settings",
+            icon: Icon(Icons.settings),
+          ),
+          _buildListTile(
+            context,
             onTap: () {},
             text: "Privacy Policy",
           ),
           _buildListTile(
+            context,
             text: "Logout",
             icon: Icon(Icons.exit_to_app),
             onTap: () {
@@ -71,12 +87,6 @@ class HomeRoute extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.chat),
             onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).pushNamed(AccountRoute.routeName);
-            },
           ),
         ],
       ),

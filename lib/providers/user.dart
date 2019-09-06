@@ -144,6 +144,12 @@ class User with ChangeNotifier {
     _user = null;
   }
 
+  Future<bool> userDataExists() async {
+    final result = await _db.collection("users").document(_user.uid).get();
+    if (result.data == null) return false;
+    return true;
+  }
+
   Future<bool> updateUserData(UserData data) async {
     try {
       DocumentReference ref = _db.collection("users").document(_user.uid);

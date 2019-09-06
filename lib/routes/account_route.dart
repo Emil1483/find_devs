@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './home_route.dart';
 import '../providers/user.dart';
 import '../ui_elements/alert_dialog.dart';
 
@@ -171,7 +172,7 @@ class _AccountRouteState extends State<AccountRoute> {
                     content: "Please try again",
                   );
                 } else {
-                  setState(() => _edited = false);
+                  Navigator.of(context).pushReplacementNamed(HomeRoute.routeName);
                 }
               }
             : null,

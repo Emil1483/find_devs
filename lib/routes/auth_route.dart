@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 import './home_route.dart';
+import './account_route.dart';
 import '../ui_elements/shrink.dart';
 import '../ui_elements/transitioner.dart';
 import '../ui_elements/alert_dialog.dart';
@@ -140,7 +141,7 @@ class _AuthRouteState extends State<AuthRoute>
         }
 
         if (error == null) {
-          Navigator.pushReplacementNamed(context, HomeRoute.routeName);
+          _getIn(user);
         } else {
           showAlertDialog(
             context,
@@ -150,6 +151,14 @@ class _AuthRouteState extends State<AuthRoute>
         }
       },
     );
+  }
+
+  void _getIn(User user) async {
+    final route = await user.userDataExists()
+        ? HomeRoute.routeName
+        : AccountRoute.routeName;
+    print(route);
+    Navigator.pushReplacementNamed(context, route);
   }
 
   Widget _buildGoogleLogin() {
@@ -165,9 +174,7 @@ class _AuthRouteState extends State<AuthRoute>
           ),
           onPressed: () async {
             AuthError error = await user.googleSignIn();
-            if (error == null) {
-              Navigator.pushReplacementNamed(context, HomeRoute.routeName);
-            }
+            if (error == null) _getIn(user);
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
