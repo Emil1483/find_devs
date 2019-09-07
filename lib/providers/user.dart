@@ -155,9 +155,20 @@ class User with ChangeNotifier {
 
   Future<bool> updateUserData(UserData data) async {
     try {
-      DocumentReference ref = _db.collection("users").document(_user.uid);
+      DocumentReference publicRef = _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("public");
 
-      Map<String, dynamic> map = {
+      DocumentReference privateRef = _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("private");
+
+      Map<String, dynamic> privateMap = {};
+      Map<String, dynamic> publicMap = {
         "lookForDevs": data.lookForDevs,
         "lookForWork": data.lookForWork,
         "lookToCollab": data.lookToCollab,
@@ -165,21 +176,17 @@ class User with ChangeNotifier {
         "about": data.about,
         "hideFromMaps": data.hideFromMaps,
         "hideEmail": data.hideEmail,
-        "private": {},
       };
 
       void add(bool hide, String key, dynamic val) {
-        if (hide) {
-          map["private"][key] = val;
-        } else {
-          map[key] = val;
-        }
+        hide ? privateMap[key] = val : publicMap[key] = val;
       }
 
       add(data.hideEmail, "email", _user.email);
       add(data.hideFromMaps, "city", data.city);
 
-      ref.setData(map);
+      publicRef.setData(publicMap);
+      privateRef.setData(privateMap);
       return true;
     } catch (e) {
       print("could not update user data: $e");
@@ -214,10 +221,29 @@ class User with ChangeNotifier {
     return map;
   }
 
+  Map<String, dynamic> combine(List<Map<String, dynamic>> data) {
+    Map<String, dynamic> map = {};
+    for (Map<String, dynamic> dataPoint in data) {
+      unpack(dataPoint).forEach((key, value) => map[key] = value);
+    }
+    return map;
+  }
+
   Future<UserData> getUserData() async {
     try {
-      final result = await _db.collection("users").document(_user.uid).get();
-      final Map<String, dynamic> data = unpack(result.data);
+      final public = await _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("public")
+          .get();
+      final private = await _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("private")
+          .get();
+      final Map<String, dynamic> data = combine([public.data, private.data]);
 
       UserData userData = UserData.fromMap(data);
       bool shouldUpdate = _shouldUpdate(data);
