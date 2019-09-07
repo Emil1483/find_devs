@@ -172,21 +172,36 @@ class User with ChangeNotifier {
     }
   }
 
+  bool _shouldUpdate(Map<String, dynamic> map) {
+    if (map["username"] == null) return true;
+    if (map["about"] == null) return true;
+    if (map["city"] == null) return true;
+    if (map["hideFromMaps"] == null) return true;
+    if (map["lookForDevs"] == null) return true;
+    if (map["lookForWork"] == null) return true;
+    if (map["lookToCollab"] == null) return true;
+    if (map["email"] == null) return true;
+    if (map["uid"] == null) return true;
+    return false;
+  }
+
   Future<UserData> getUserData() async {
     try {
       final result = await _db.collection("users").document(_user.uid).get();
 
       UserData userData = UserData.fromMap(result.data);
+      bool shouldUpdate = _shouldUpdate(result.data);
+
       if (userData.username == null || userData.username.isEmpty) {
         userData.username = _user.displayName;
+        shouldUpdate = true;
       }
-      updateUserData(userData);
+      print("shouldUpdata:$shouldUpdate");
+      if (shouldUpdate) updateUserData(userData);
       return userData;
     } catch (e) {
       print("could not get user data: $e");
-      final userData = UserData(username: _user.displayName);
-      updateUserData(userData);
-      return userData;
+      return UserData();
     }
   }
 
