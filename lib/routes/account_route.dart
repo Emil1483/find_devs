@@ -172,7 +172,8 @@ class _AccountRouteState extends State<AccountRoute> {
                     content: "Please try again",
                   );
                 } else {
-                  Navigator.of(context).pushReplacementNamed(HomeRoute.routeName);
+                  Navigator.of(context)
+                      .pushReplacementNamed(HomeRoute.routeName);
                 }
               }
             : null,
@@ -192,10 +193,10 @@ class _AccountRouteState extends State<AccountRoute> {
     );
   }
 
-  Widget _buildHide() {
+  Widget _buildSwitch(Function onChange, String text, bool value) {
     Function onTap = () {
       setState(() {
-        _userData.hideFromMaps = !_userData.hideFromMaps;
+        onChange();
         _edited = true;
       });
     };
@@ -208,13 +209,29 @@ class _AccountRouteState extends State<AccountRoute> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Text("Hide from maps"),
+            Text(text),
             Switch(
               onChanged: (bool value) => onTap(),
-              value: _userData.hideFromMaps,
+              value: value,
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildEmail(BuildContext context) {
+    User user = Provider.of<User>(context, listen: false);
+    String email;
+    if (user.user != null) email = user.user.email;
+    else email = "Could not get email";
+    return TextField(
+      controller: TextEditingController(text: email),
+      enabled: false,
+      style: TextStyle(color: Theme.of(context).disabledColor),
+      decoration: InputDecoration(
+        labelText: "Email",
+        icon: Icon(Icons.email),
       ),
     );
   }
@@ -252,7 +269,17 @@ class _AccountRouteState extends State<AccountRoute> {
             _buildLookingFor(),
             _text("Tell me about yourself"),
             _buildFormFields(),
-            _buildHide(),
+            _buildSwitch(
+              () => _userData.hideFromMaps = !_userData.hideFromMaps,
+              "Hide from maps",
+              _userData.hideFromMaps,
+            ),
+            _buildEmail(context),
+            _buildSwitch(
+              () => _userData.hideEmail = !_userData.hideEmail,
+              "Hide email from others",
+              _userData.hideEmail,
+            ),
             _buildSave(),
           ],
         ),

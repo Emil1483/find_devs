@@ -17,6 +17,7 @@ class UserData {
   bool lookForWork;
   bool lookToCollab;
   bool hideFromMaps;
+  bool hideEmail;
   String username;
   String about;
   String city;
@@ -29,6 +30,7 @@ class UserData {
     this.about,
     this.city,
     this.hideFromMaps = false,
+    this.hideEmail = false,
   });
 
   factory UserData.fromMap(Map<String, dynamic> map) {
@@ -40,6 +42,7 @@ class UserData {
       lookForDevs: map["lookForDevs"] ?? false,
       lookForWork: map["lookForWork"] ?? false,
       lookToCollab: map["lookToCollab"] ?? false,
+      hideEmail: map["hideEmail"] ?? false,
     );
   }
 }
@@ -154,17 +157,29 @@ class User with ChangeNotifier {
     try {
       DocumentReference ref = _db.collection("users").document(_user.uid);
 
-      ref.setData({
-        "uid": _user.uid,
-        "email": _user.email,
+      Map<String, dynamic> map = {
         "lookForDevs": data.lookForDevs,
         "lookForWork": data.lookForWork,
         "lookToCollab": data.lookToCollab,
         "username": data.username,
         "about": data.about,
         "hideFromMaps": data.hideFromMaps,
-        "city": data.city,
-      });
+        "hideEmail": data.hideEmail,
+        "private": {},
+      };
+
+      void add(bool hide, String key, dynamic val) {
+        if (hide) {
+          map["private"][key] = val;
+        } else {
+          map[key] = val;
+        }
+      }
+
+      add(data.hideEmail, "email", _user.email);
+      add(data.hideFromMaps, "city", data.city);
+
+      ref.setData(map);
       return true;
     } catch (e) {
       print("could not update user data: $e");
@@ -182,21 +197,35 @@ class User with ChangeNotifier {
     if (map["lookToCollab"] == null) return true;
     if (map["email"] == null) return true;
     if (map["uid"] == null) return true;
+    if (map["hideEmail"]) return true;
     return false;
+  }
+
+  Map<String, dynamic> unpack(Map data) {
+    Map<String, dynamic> map = {};
+    for (var entrie in data.entries) {
+      if (entrie.value is Map) {
+        unpack(entrie.value).forEach((key, value) => map[key] = value);
+        continue;
+      } else {
+        map[entrie.key] = entrie.value;
+      }
+    }
+    return map;
   }
 
   Future<UserData> getUserData() async {
     try {
       final result = await _db.collection("users").document(_user.uid).get();
+      final Map<String, dynamic> data = unpack(result.data);
 
-      UserData userData = UserData.fromMap(result.data);
-      bool shouldUpdate = _shouldUpdate(result.data);
+      UserData userData = UserData.fromMap(data);
+      bool shouldUpdate = _shouldUpdate(data);
 
       if (userData.username == null || userData.username.isEmpty) {
         userData.username = _user.displayName;
         shouldUpdate = true;
       }
-      print("shouldUpdata:$shouldUpdate");
       if (shouldUpdate) updateUserData(userData);
       return userData;
     } catch (e) {
