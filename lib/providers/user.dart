@@ -21,21 +21,25 @@ class UserData {
   String username;
   String about;
   String city;
+  String email;
 
   UserData({
-    this.lookForDevs = false,
-    this.lookForWork = false,
-    this.lookToCollab = false,
-    this.username,
-    this.about,
-    this.city,
-    this.hideFromMaps = false,
-    this.hideEmail = false,
+    @required this.lookForDevs,
+    @required this.lookForWork,
+    @required this.lookToCollab,
+    @required this.username,
+    @required this.about,
+    @required this.city,
+    @required this.hideFromMaps,
+    @required this.hideEmail,
+    @required this.email,
   });
 
-  factory UserData.fromMap(Map<String, dynamic> map) {
+  factory UserData.fromMap(Map<String, dynamic> map,
+      {String username, String email}) {
     return UserData(
-      username: map["username"] ?? null,
+      username: map["username"] ?? username,
+      email: map["email"] ?? email,
       about: map["about"] ?? null,
       city: map["city"] ?? null,
       hideFromMaps: map["hideFromMaps"] ?? false,
@@ -44,6 +48,20 @@ class UserData {
       lookToCollab: map["lookToCollab"] ?? false,
       hideEmail: map["hideEmail"] ?? false,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "username": username,
+      "about": about,
+      "city": city,
+      "hideFromMaps": hideFromMaps,
+      "lookForDevs": lookForDevs,
+      "lookForWork": lookForWork,
+      "lookToCollab": lookToCollab,
+      "hideEmail": hideEmail,
+      "email": email,
+    };
   }
 }
 
@@ -155,38 +173,27 @@ class User with ChangeNotifier {
 
   Future<bool> updateUserData(UserData data) async {
     try {
-      DocumentReference publicRef = _db
-          .collection("users")
-          .document(_user.uid)
-          .collection("info")
-          .document("public");
+      final CollectionReference ref =
+          _db.collection("users").document(_user.uid).collection("info");
 
-      DocumentReference privateRef = _db
-          .collection("users")
-          .document(_user.uid)
-          .collection("info")
-          .document("private");
+      final DocumentReference publicRef = ref.document("public");
+
+      final DocumentReference privateRef = ref.document("private");
 
       Map<String, dynamic> privateMap = {};
-      Map<String, dynamic> publicMap = {
-        "lookForDevs": data.lookForDevs,
-        "lookForWork": data.lookForWork,
-        "lookToCollab": data.lookToCollab,
-        "username": data.username,
-        "about": data.about,
-        "hideFromMaps": data.hideFromMaps,
-        "hideEmail": data.hideEmail,
-      };
+      Map<String, dynamic> publicMap = data.toMap();
 
       void add(bool hide, String key, dynamic val) {
-        hide ? privateMap[key] = val : publicMap[key] = val;
+        if (!hide) return;
+        privateMap[key] = val;
+        publicMap.remove(key);
       }
 
       add(data.hideEmail, "email", _user.email);
       add(data.hideFromMaps, "city", data.city);
 
-      publicRef.setData(publicMap);
-      privateRef.setData(privateMap);
+      await publicRef.setData(publicMap);
+      await privateRef.setData(privateMap);
       return true;
     } catch (e) {
       print("could not update user data: $e");
@@ -195,24 +202,17 @@ class User with ChangeNotifier {
   }
 
   bool _shouldUpdate(Map<String, dynamic> map) {
-    if (map["username"] == null) return true;
-    if (map["about"] == null) return true;
-    if (map["city"] == null) return true;
-    if (map["hideFromMaps"] == null) return true;
-    if (map["lookForDevs"] == null) return true;
-    if (map["lookForWork"] == null) return true;
-    if (map["lookToCollab"] == null) return true;
-    if (map["email"] == null) return true;
-    if (map["uid"] == null) return true;
-    if (map["hideEmail"]) return true;
+    for (String key in UserData.fromMap({}).toMap().keys) {
+      if (map[key] == null) return true;
+    }
     return false;
   }
 
-  Map<String, dynamic> unpack(Map data) {
+  Map<String, dynamic> _unpack(Map data) {
     Map<String, dynamic> map = {};
     for (var entrie in data.entries) {
       if (entrie.value is Map) {
-        unpack(entrie.value).forEach((key, value) => map[key] = value);
+        _unpack(entrie.value).forEach((key, value) => map[key] = value);
         continue;
       } else {
         map[entrie.key] = entrie.value;
@@ -221,42 +221,35 @@ class User with ChangeNotifier {
     return map;
   }
 
-  Map<String, dynamic> combine(List<Map<String, dynamic>> data) {
+  Map<String, dynamic> _combine(List<Map<String, dynamic>> data) {
     Map<String, dynamic> map = {};
     for (Map<String, dynamic> dataPoint in data) {
-      unpack(dataPoint).forEach((key, value) => map[key] = value);
+      _unpack(dataPoint).forEach((key, value) => map[key] = value);
     }
     return map;
   }
 
   Future<UserData> getUserData() async {
     try {
-      final public = await _db
-          .collection("users")
-          .document(_user.uid)
-          .collection("info")
-          .document("public")
-          .get();
-      final private = await _db
-          .collection("users")
-          .document(_user.uid)
-          .collection("info")
-          .document("private")
-          .get();
-      final Map<String, dynamic> data = combine([public.data, private.data]);
+      final CollectionReference ref =
+          _db.collection("users").document(_user.uid).collection("info");
+      final public = await ref.document("public").get();
+      final private = await ref.document("private").get();
 
-      UserData userData = UserData.fromMap(data);
-      bool shouldUpdate = _shouldUpdate(data);
+      final Map<String, dynamic> data = _combine([public.data, private.data]);
 
-      if (userData.username == null || userData.username.isEmpty) {
-        userData.username = _user.displayName;
-        shouldUpdate = true;
-      }
-      if (shouldUpdate) updateUserData(userData);
+      UserData userData = UserData.fromMap(
+        data,
+        email: _user.email,
+        username: _user.displayName,
+      );
+
+      if (_shouldUpdate(data)) updateUserData(userData);
+
       return userData;
     } catch (e) {
       print("could not get user data: $e");
-      return UserData();
+      return UserData.fromMap({});
     }
   }
 
