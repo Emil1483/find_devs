@@ -25,7 +25,6 @@ class LoadingRoute extends StatelessWidget {
         return child;
       },
       child: Scaffold(
-        appBar: AppBar(),
         body: Container(
           alignment: Alignment.center,
           padding: EdgeInsets.all(64.0),
