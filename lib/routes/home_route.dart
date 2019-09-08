@@ -28,52 +28,54 @@ class HomeRoute extends StatelessWidget {
 
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: 28.0),
-            child: Image(
-              image: AssetImage("assets/missing_asset.png"),
-              height: 144.0,
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 28.0),
+              child: Image(
+                image: AssetImage("assets/missing_asset.png"),
+                height: 144.0,
+              ),
             ),
-          ),
-          _buildListTile(
-            context,
-            onTap: () {},
-            text: "Find Devs",
-            icon: Icon(Icons.account_circle),
-          ),
-          _buildListTile(
-            context,
-            onTap: () {},
-            text: "Projects",
-            subtitle: "Contract or collaboration",
-            icon: Icon(Icons.code),
-          ),
-          _buildListTile(
-            context,
-            onTap: () {
-              Navigator.of(context).pushNamed(AccountRoute.routeName);
-            },
-            text: "Account Settings",
-            icon: Icon(Icons.settings),
-          ),
-          _buildListTile(
-            context,
-            onTap: () {},
-            text: "Privacy Policy",
-          ),
-          _buildListTile(
-            context,
-            text: "Logout",
-            icon: Icon(Icons.exit_to_app),
-            onTap: () {
-              print("logout");
-              Provider.of<User>(context, listen: false).logOut();
-              Navigator.pushReplacementNamed(context, AuthRoute.routeName);
-            },
-          ),
-        ],
+            _buildListTile(
+              context,
+              onTap: () {},
+              text: "Find Devs",
+              icon: Icon(Icons.account_circle),
+            ),
+            _buildListTile(
+              context,
+              onTap: () {},
+              text: "Projects",
+              subtitle: "Contract or collaboration",
+              icon: Icon(Icons.code),
+            ),
+            _buildListTile(
+              context,
+              onTap: () {
+                Navigator.of(context).pushNamed(AccountRoute.routeName);
+              },
+              text: "Account Settings",
+              icon: Icon(Icons.settings),
+            ),
+            _buildListTile(
+              context,
+              onTap: () {},
+              text: "Privacy Policy",
+            ),
+            _buildListTile(
+              context,
+              text: "Logout",
+              icon: Icon(Icons.exit_to_app),
+              onTap: () {
+                print("logout");
+                Provider.of<User>(context, listen: false).logOut();
+                Navigator.pushReplacementNamed(context, AuthRoute.routeName);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
