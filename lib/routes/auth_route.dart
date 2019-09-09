@@ -50,7 +50,7 @@ class _AuthRouteState extends State<AuthRoute>
     return <Widget>[
       TextFormField(
         keyboardType: TextInputType.emailAddress,
-        onSaved: (String str) => _email = str,
+        onSaved: (String str) => _email = str.trim(),
         decoration: InputDecoration(
           labelText: "Email",
           icon: Icon(Icons.mail),
@@ -120,7 +120,7 @@ class _AuthRouteState extends State<AuthRoute>
       child: Transitioner(
         animation: _controller,
         child1: Text("Login"),
-        child2: Text("Continue"),
+        child2: Text("Sign Up"),
       ),
       onPressed: () async {
         final formState = _formKey.currentState;
@@ -157,7 +157,6 @@ class _AuthRouteState extends State<AuthRoute>
     final route = await user.userDataExists()
         ? HomeRoute.routeName
         : AccountRoute.routeName;
-    print(route);
     Navigator.pushReplacementNamed(context, route);
   }
 
@@ -239,26 +238,60 @@ class _AuthRouteState extends State<AuthRoute>
 
   @override
   Widget build(BuildContext context) {
+    bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: AppBar(title: Text("Login")),
       body: Form(
         key: _formKey,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 22.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                _buildLogo(),
-                ..._buildFormFields(),
-                SizedBox(height: 22.0),
-                _buildLogin(context),
-                _buildGoogleLogin(),
-                _buildButtomFull(context),
-              ],
-            ),
-          ),
-        ),
+        child: portrait
+            ? SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 22.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    _buildLogo(),
+                    ..._buildFormFields(),
+                    SizedBox(height: 22.0),
+                    _buildLogin(context),
+                    _buildGoogleLogin(),
+                    _buildButtomFull(context),
+                  ],
+                ),
+              )
+            : Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      constraints: BoxConstraints.expand(),
+                      child: Center(
+                        child: SingleChildScrollView(
+                          physics: NeverScrollableScrollPhysics(),
+                          child: Column(
+                            children: <Widget>[
+                              _buildLogo(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: 22.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          ..._buildFormFields(),
+                          SizedBox(height: 22.0),
+                          _buildLogin(context),
+                          _buildGoogleLogin(),
+                          _buildButtomFull(context),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
