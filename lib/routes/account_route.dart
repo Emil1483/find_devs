@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './home_route.dart';
 import '../providers/user.dart';
 import '../ui_elements/alert_dialog.dart';
+import '../ui_elements/button.dart';
 
 class AccountRoute extends StatefulWidget {
   static const String routeName = "/account";
@@ -21,6 +22,7 @@ class _AccountRouteState extends State<AccountRoute> {
   TextEditingController _city;
   bool _edited = false;
   bool _loading = true;
+  bool _error = false;
 
   @override
   initState() {
@@ -40,12 +42,19 @@ class _AccountRouteState extends State<AccountRoute> {
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
-  void _getUser() async {
+  Future<bool> _getUser() async {
     final User user = Provider.of<User>(context, listen: false);
 
     _userData = await user.getUserData(
       shouldFix: Navigator.of(context).canPop(),
     );
+    if (_userData == null) {
+      setState(() {
+        _loading = false;
+        _error = true;
+      });
+      return false;
+    }
 
     _edited = !Navigator.of(context).canPop();
 
@@ -57,6 +66,7 @@ class _AccountRouteState extends State<AccountRoute> {
     _city = TextEditingController(text: _userData.city)..addListener(onChanged);
 
     setState(() => _loading = false);
+    return true;
   }
 
   Widget _buildListTile({
@@ -157,16 +167,10 @@ class _AccountRouteState extends State<AccountRoute> {
   }
 
   Widget _buildSave() {
-    ThemeData theme = Theme.of(context);
-
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: RaisedButton(
-        color: theme.accentColor,
-        textColor: theme.canvasColor,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
+      child: MainButton(
+        child: Text("Save"),
         onPressed: _edited
             ? () async {
                 if (!_formKey.currentState.validate()) return;
@@ -185,7 +189,6 @@ class _AccountRouteState extends State<AccountRoute> {
                 }
               }
             : null,
-        child: Text("Save"),
       ),
     );
   }
@@ -261,6 +264,68 @@ class _AccountRouteState extends State<AccountRoute> {
 
   @override
   Widget build(BuildContext context) {
+    if (_error) {
+      bool back = false; //Navigator.of(context).canPop();
+      TextTheme theme = Theme.of(context).textTheme;
+      return Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                _buildLogo(),
+                Text("Oops!", style: theme.display2),
+                SizedBox(height: 12),
+                Text("Could not load your settings", style: theme.headline),
+                SizedBox(height: 8),
+                Text(
+                  "Check your internet",
+                  style: theme.body1,
+                ),
+                SizedBox(height: 16),
+                MainButton(
+                  onPressed: () async {
+                    if (back)
+                      Navigator.pop(context);
+                    else {
+                      setState(() => _loading = true);
+                      await Future.delayed(Duration(milliseconds: 400));
+                      if (await _getUser()) {
+                        setState(() {
+                          _loading = false;
+                          _error = false;
+                        });
+                      } else
+                        setState(() => _loading = false);
+                    }
+                  },
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      if (_loading)
+                        Container(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Theme.of(context).canvasColor,
+                            strokeWidth: 2.5,
+                          ),
+                        ),
+                      Visibility(
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        visible: !_loading,
+                        child: Text(back ? "Back to Homepage" : "Try Again"),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     if (_loading)
       return Scaffold(
         body: Center(

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 
 enum AuthError {
   UserNotFound,
@@ -88,6 +89,8 @@ class User with ChangeNotifier {
   final Firestore _db = Firestore.instance;
 
   bool _waiting = true;
+
+  static const Duration timeoutDuration = Duration(seconds: 5);
 
   FirebaseUser get user => _user;
   bool get waiting => _waiting;
@@ -182,32 +185,36 @@ class User with ChangeNotifier {
     }
   }
 
+  Future<bool> _noInternet() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) return true;
+    return false;
+  }
+
   Future<bool> updateUserData(UserData data) async {
+    if (await _noInternet()) return false;
+
+    Map<String, dynamic> privateMap = {};
+    Map<String, dynamic> publicMap = data.toMap();
+
+    void add(bool hide, String key, dynamic val) {
+      if (!hide) return;
+      privateMap[key] = val;
+      publicMap.remove(key);
+    }
+
+    add(data.hideEmail, "email", _user.email);
+    add(data.hideFromMaps, "city", data.city);
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
 
-      final DocumentReference publicRef = ref.document("public");
-
-      final DocumentReference privateRef = ref.document("private");
-
-      Map<String, dynamic> privateMap = {};
-      Map<String, dynamic> publicMap = data.toMap();
-
-      void add(bool hide, String key, dynamic val) {
-        if (!hide) return;
-        privateMap[key] = val;
-        publicMap.remove(key);
-      }
-
-      add(data.hideEmail, "email", _user.email);
-      add(data.hideFromMaps, "city", data.city);
-
-      await publicRef.setData(publicMap);
-      await privateRef.setData(privateMap);
+      await ref.document("public").setData(publicMap);
+      if (privateMap.length > 0)
+        await ref.document("private").setData(privateMap);
       return true;
     } catch (e) {
-      print("could not update user data: $e");
+      print("updateUserData: $e");
       return false;
     }
   }
@@ -241,6 +248,7 @@ class User with ChangeNotifier {
   }
 
   Future<UserData> getUserData({bool shouldFix = false}) async {
+    if (await _noInternet()) return null;
     DocumentSnapshot public;
     DocumentSnapshot private;
     try {
@@ -251,7 +259,7 @@ class User with ChangeNotifier {
       private = await ref.document("private").get();
     } catch (e) {
       print("could not get user data: $e, \nimplement error handeling!");
-      return UserData.fromMap({});
+      return null;
     }
 
     final Map<String, dynamic> data = _combine([

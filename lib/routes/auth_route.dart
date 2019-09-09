@@ -7,6 +7,7 @@ import './account_route.dart';
 import '../ui_elements/shrink.dart';
 import '../ui_elements/transitioner.dart';
 import '../ui_elements/alert_dialog.dart';
+import '../ui_elements/button.dart';
 
 class AuthRoute extends StatefulWidget {
   static const routeName = "/auth";
