@@ -33,9 +33,9 @@ class _AccountRouteState extends State<AccountRoute> {
   @override
   void dispose() {
     super.dispose();
-    _username.dispose();
-    _about.dispose();
-    _city.dispose();
+    if (_username != null) _username.dispose();
+    if (_about != null) _about.dispose();
+    if (_city != null) _city.dispose();
   }
 
   void _update() {
@@ -265,7 +265,7 @@ class _AccountRouteState extends State<AccountRoute> {
   @override
   Widget build(BuildContext context) {
     if (_error) {
-      bool back = false; //Navigator.of(context).canPop();
+      bool back = Navigator.of(context).canPop();
       TextTheme theme = Theme.of(context).textTheme;
       return Scaffold(
         body: Center(
