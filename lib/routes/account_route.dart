@@ -23,6 +23,7 @@ class _AccountRouteState extends State<AccountRoute> {
   bool _edited = false;
   bool _loading = true;
   bool _error = false;
+  bool _saving = false;
 
   @override
   initState() {
@@ -86,6 +87,68 @@ class _AccountRouteState extends State<AccountRoute> {
     );
   }
 
+  Widget _buildLoadingText(String text, bool loading) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        if (loading)
+          Container(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              backgroundColor: Theme.of(context).canvasColor,
+              strokeWidth: 2.5,
+            ),
+          ),
+        Visibility(
+          maintainSize: true,
+          maintainAnimation: true,
+          maintainState: true,
+          visible: !loading,
+          child: Text(text),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSwitch(Function onChange, String text, bool value) {
+    Function onTap = () {
+      setState(() {
+        onChange();
+        _edited = true;
+      });
+    };
+    return Container(
+      height: 36,
+      alignment: Alignment.centerRight,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Text(text),
+            Switch(
+              onChanged: (bool value) => onTap(),
+              value: value,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _text(String text) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.title,
+      ),
+    );
+  }
+
   Widget _buildLookingFor() {
     return Column(
       children: <Widget>[
@@ -117,6 +180,17 @@ class _AccountRouteState extends State<AccountRoute> {
           value: _userData.lookToCollab,
         ),
       ],
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      alignment: Alignment.center,
+      height: 177.0,
+      margin: EdgeInsets.symmetric(vertical: 22.0),
+      child: Image(
+        image: AssetImage("assets/missing_asset.png"),
+      ),
     );
   }
 
@@ -166,71 +240,6 @@ class _AccountRouteState extends State<AccountRoute> {
     );
   }
 
-  Widget _buildSave() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: MainButton(
-        child: Text("Save"),
-        onPressed: _edited
-            ? () async {
-                if (!_formKey.currentState.validate()) return;
-                _formKey.currentState.save();
-                final User user = Provider.of<User>(context, listen: false);
-                final bool result = await user.updateUserData(_userData);
-                if (!result) {
-                  showAlertDialog(
-                    context,
-                    title: "Could not save data",
-                    content: "Please try again",
-                  );
-                } else {
-                  Navigator.of(context)
-                      .pushReplacementNamed(HomeRoute.routeName);
-                }
-              }
-            : null,
-      ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Container(
-      alignment: Alignment.center,
-      height: 177.0,
-      margin: EdgeInsets.symmetric(vertical: 22.0),
-      child: Image(
-        image: AssetImage("assets/missing_asset.png"),
-      ),
-    );
-  }
-
-  Widget _buildSwitch(Function onChange, String text, bool value) {
-    Function onTap = () {
-      setState(() {
-        onChange();
-        _edited = true;
-      });
-    };
-    return Container(
-      height: 36,
-      alignment: Alignment.centerRight,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Text(text),
-            Switch(
-              onChanged: (bool value) => onTap(),
-              value: value,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmail(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     String email;
@@ -251,13 +260,34 @@ class _AccountRouteState extends State<AccountRoute> {
     );
   }
 
-  Widget _text(String text) {
+  Widget _buildSave() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.title,
+      child: MainButton(
+        child: _buildLoadingText("Save", _saving),
+        onPressed: _edited
+            ? () async {
+                if (!_formKey.currentState.validate()) return;
+                _formKey.currentState.save();
+
+                setState(() => _saving = true);
+
+                final User user = Provider.of<User>(context, listen: false);
+                final bool result = await user.updateUserData(_userData);
+                if (!result) {
+                  showAlertDialog(
+                    context,
+                    title: "Could not save data",
+                    content: "Please try again",
+                  );
+                } else {
+                  Navigator.of(context)
+                      .pushReplacementNamed(HomeRoute.routeName);
+                }
+
+                setState(() => _saving = false);
+              }
+            : null,
       ),
     );
   }
@@ -298,27 +328,8 @@ class _AccountRouteState extends State<AccountRoute> {
                         setState(() => _loading = false);
                     }
                   },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      if (_loading)
-                        Container(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            backgroundColor: Theme.of(context).canvasColor,
-                            strokeWidth: 2.5,
-                          ),
-                        ),
-                      Visibility(
-                        maintainSize: true,
-                        maintainAnimation: true,
-                        maintainState: true,
-                        visible: !_loading,
-                        child: Text(back ? "Back to Homepage" : "Try Again"),
-                      ),
-                    ],
-                  ),
+                  child: _buildLoadingText(
+                      back ? "Back to Homepage" : "Try Again", _loading),
                 ),
               ],
             ),
