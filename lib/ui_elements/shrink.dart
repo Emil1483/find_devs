@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 class Shrink extends StatefulWidget {
   final Widget child;
   final Animation animation;
-  final bool reverse;
 
   const Shrink({
     @required this.child,
     @required this.animation,
-    this.reverse = false,
     Key key,
   }) : super(key: key);
 
@@ -19,30 +17,35 @@ class Shrink extends StatefulWidget {
 }
 
 class ShrinkState extends State<Shrink> {
-  double _height;
+  double height;
 
-  void setHeight(double h) => setState(() => _height = h);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        height = context.size.height;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    double h;
-    if (_height == null)
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) {
-          h = context.size.height;
-        },
-      );
-    else
-      h = _height;
-
     return AnimatedBuilder(
       animation: widget.animation,
       builder: (BuildContext context, _) {
         double value = Curves.easeInOut.transform(widget.animation.value);
-        if (widget.reverse) value = 1 - value;
+        double h;
+        if (height != null) {
+          h = height * (1 - value);
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => setState(() {}),
+          );
+        }
         return Container(
           constraints: BoxConstraints.tightFor(
-            height: h != null ? h * (1 - value) : null,
+            height: h,
           ),
           child: Transform(
             transform: Matrix4.identity()..rotateX(value * math.pi / 2),

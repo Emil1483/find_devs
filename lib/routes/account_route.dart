@@ -25,7 +25,7 @@ class _AccountRouteState extends State<AccountRoute> {
   @override
   initState() {
     super.initState();
-    getUser();
+    _getUser();
   }
 
   @override
@@ -36,10 +36,18 @@ class _AccountRouteState extends State<AccountRoute> {
     _city.dispose();
   }
 
-  void getUser() async {
+  void _update() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  void _getUser() async {
     final User user = Provider.of<User>(context, listen: false);
 
-    _userData = await user.getUserData();
+    _userData = await user.getUserData(
+      shouldFix: Navigator.of(context).canPop(),
+    );
+
+    _edited = !Navigator.of(context).canPop();
 
     final onChanged = () => setState(() => _edited = true);
     _username = TextEditingController(text: _userData.username)
@@ -223,8 +231,12 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget _buildEmail(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     String email;
-    if (user.user != null) email = user.user.email;
-    else email = "Could not get email";
+    if (user.user != null)
+      email = user.user.email;
+    else {
+      email = "Could not get email";
+      _update();
+    }
     return TextField(
       controller: TextEditingController(text: email),
       enabled: false,

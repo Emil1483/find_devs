@@ -93,10 +93,10 @@ class User with ChangeNotifier {
   bool get waiting => _waiting;
 
   User() {
-    autoLogin();
+    _autoLogin();
   }
 
-  Future<void> autoLogin() async {
+  Future<void> _autoLogin() async {
     FirebaseUser user = await _auth.currentUser();
     if (user != null) _user = user;
     _waiting = false;
@@ -166,9 +166,20 @@ class User with ChangeNotifier {
   }
 
   Future<bool> userDataExists() async {
-    final result = await _db.collection("users").document(_user.uid).get();
-    if (result.data == null) return false;
-    return true;
+    try {
+      final CollectionReference ref =
+          _db.collection("users").document(_user.uid).collection("info");
+
+      final publicResult = await ref.document("public").get();
+      if (publicResult.exists) return true;
+
+      final privateResult = await ref.document("private").get();
+      if (privateResult.exists) return true;
+
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> updateUserData(UserData data) async {
@@ -229,28 +240,34 @@ class User with ChangeNotifier {
     return map;
   }
 
-  Future<UserData> getUserData() async {
+  Future<UserData> getUserData({bool shouldFix = false}) async {
+    DocumentSnapshot public;
+    DocumentSnapshot private;
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
-      final public = await ref.document("public").get();
-      final private = await ref.document("private").get();
 
-      final Map<String, dynamic> data = _combine([public.data, private.data]);
-
-      UserData userData = UserData.fromMap(
-        data,
-        email: _user.email,
-        username: _user.displayName,
-      );
-
-      if (_shouldUpdate(data)) updateUserData(userData);
-
-      return userData;
+      public = await ref.document("public").get();
+      private = await ref.document("private").get();
     } catch (e) {
-      print("could not get user data: $e");
+      print("could not get user data: $e, \nimplement error handeling!");
       return UserData.fromMap({});
     }
+
+    final Map<String, dynamic> data = _combine([
+      public.exists ? public.data : {},
+      private.exists ? private.data : {},
+    ]);
+
+    UserData userData = UserData.fromMap(
+      data,
+      email: _user.email,
+      username: _user.displayName,
+    );
+
+    if (shouldFix && _shouldUpdate(data)) updateUserData(userData);
+
+    return userData;
   }
 
   AuthError _getErrorType(PlatformException e) {
