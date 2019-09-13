@@ -42,7 +42,7 @@ class _AuthRouteState extends State<AuthRoute>
       height: 177.0,
       margin: EdgeInsets.symmetric(vertical: 22.0),
       child: Image(
-        image: AssetImage("assets/missing_asset.png"),
+        image: AssetImage("assets/login.png"),
       ),
     );
   }
@@ -244,6 +244,7 @@ class _AuthRouteState extends State<AuthRoute>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
+                    SizedBox(height: 12.0),
                     _buildLogo(),
                     ..._buildFormFields(),
                     SizedBox(height: 22.0),
