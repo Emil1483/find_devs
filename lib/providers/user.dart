@@ -34,7 +34,12 @@ class UserData {
     @required this.hideFromMaps,
     @required this.hideEmail,
     @required this.email,
-  });
+  }) {
+    if (about.isEmpty) about = null;
+    if (username.isEmpty) about = null;
+    if (city.isEmpty) about = null;
+    if (email.isEmpty) about = null;
+  }
 
   factory UserData.fromMap(Map<String, dynamic> map,
       {String username, String email}) {
