@@ -186,10 +186,10 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget _buildLogo() {
     return Container(
       alignment: Alignment.center,
-      height: 177.0,
-      margin: EdgeInsets.symmetric(vertical: 22.0),
+      height: 222.0,
+      margin: EdgeInsets.only(bottom: 12.0),
       child: Image(
-        image: AssetImage("assets/missing_asset.png"),
+        image: AssetImage("assets/account.png"),
       ),
     );
   }
