@@ -32,9 +32,13 @@ class HomeRoute extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 28.0),
+              padding: EdgeInsets.only(
+                top: 28.0,
+                right: 64.0,
+                left: 64.0,
+              ),
               child: Image(
-                image: AssetImage("assets/missing_asset.png"),
+                image: AssetImage("assets/glasses.png"),
                 height: 144.0,
               ),
             ),

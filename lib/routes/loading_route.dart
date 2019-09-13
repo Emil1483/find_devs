@@ -38,7 +38,7 @@ class LoadingRoute extends StatelessWidget {
           alignment: Alignment.center,
           padding: EdgeInsets.all(64.0),
           child: Image.asset(
-            "assets/missing_asset.png",
+            "assets/glasses.png",
           ),
         ),
       ),
