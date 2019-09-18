@@ -243,13 +243,6 @@ class _AccountRouteState extends State<AccountRoute> {
     );
   }
 
-  Future<bool> _addressExists(String address) async {
-    var addresses = await Geocoder.local.findAddressesFromQuery(address);
-    if (addresses.length == 0) return false;
-    _city.text = addresses.first.featureName;
-    return true;
-  }
-
   Widget _buildEmail(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
     String email;
