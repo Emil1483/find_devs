@@ -235,6 +235,10 @@ class _AccountRouteState extends State<AccountRoute> {
             labelText: "City",
             icon: Icon(Icons.location_city),
           ),
+          validator: (String str) {
+            if (!_userData.hideFromMaps && str.isEmpty) return "Please type your city";
+            return null;
+          },
         ),
       ],
     );
