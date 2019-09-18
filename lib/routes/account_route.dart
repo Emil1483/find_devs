@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoder/geocoder.dart';
 
 import './home_route.dart';
 import '../providers/user.dart';
@@ -228,20 +229,25 @@ class _AccountRouteState extends State<AccountRoute> {
         ),
         TextFormField(
           controller: _city,
-          onSaved: (String val) {
-            _userData.city = val.trim();
-          },
           decoration: InputDecoration(
             labelText: "City",
             icon: Icon(Icons.location_city),
           ),
-          validator: (String str) {
-            if (!_userData.hideCity && str.isEmpty) return "Please type your city";
+          validator: (String value) {
+            if (!_userData.hideCity && value.isEmpty)
+              return "Please type your city";
             return null;
           },
         ),
       ],
     );
+  }
+
+  Future<bool> _addressExists(String address) async {
+    var addresses = await Geocoder.local.findAddressesFromQuery(address);
+    if (addresses.length == 0) return false;
+    _city.text = addresses.first.featureName;
+    return true;
   }
 
   Widget _buildEmail(BuildContext context) {

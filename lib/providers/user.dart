@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:geocoder/geocoder.dart';
 
 enum AuthError {
   UserNotFound,
@@ -191,11 +192,63 @@ class User with ChangeNotifier {
     return false;
   }
 
+  Future<bool> _removeFromPlaces() async {
+    try {
+      final ref = await _db.collection("places").getDocuments();
+      Map<String, dynamic> newData;
+      String id;
+      ref.documents.forEach((DocumentSnapshot snapshot) {
+        if (snapshot.data[_user.uid] != null) {
+          newData = snapshot.data;
+          newData.remove(_user.uid);
+          id = snapshot.documentID;
+          return;
+        }
+      });
+      if (id == null) return true;
+
+      await _db.collection("places").document(id).setData(newData);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<bool> _addToPlace(UserData data) async {
+    try {
+      var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
+      final ref = _db
+          .collection("places")
+          .document(addresses.first.coordinates.toString());
+      await ref.setData({
+        "city": data.city,
+        "country": addresses.first.countryName,
+        _user.uid: {
+          "lookForDevs": data.lookForDevs,
+          "lookForWork": data.lookForWork,
+          "lookToCollab": data.lookToCollab,
+        },
+      }, merge: true);
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
   Future<bool> updateUserData(UserData data) async {
     if (await _noInternet()) return false;
 
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
+
+    var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
+    if (addresses.length == 0) return false;
+    data.city = addresses.first.featureName;
+
+    if (!await _removeFromPlaces()) return false;
+    if (!data.hideCity) if (!await _addToPlace(data)) return false;
 
     void add(bool hide, String key, dynamic val) {
       if (!hide) return;
