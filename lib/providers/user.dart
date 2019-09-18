@@ -17,7 +17,7 @@ class UserData {
   bool lookForDevs;
   bool lookForWork;
   bool lookToCollab;
-  bool hideFromMaps;
+  bool hideCity;
   bool hideEmail;
   String username;
   String about;
@@ -31,7 +31,7 @@ class UserData {
     @required this.username,
     @required this.about,
     @required this.city,
-    @required this.hideFromMaps,
+    @required this.hideCity,
     @required this.hideEmail,
     @required this.email,
   });
@@ -43,7 +43,7 @@ class UserData {
       email: map["email"] ?? email,
       about: map["about"] ?? null,
       city: map["city"] ?? null,
-      hideFromMaps: map["hideFromMaps"] ?? false,
+      hideCity: map["hideMaps"] ?? false,
       lookForDevs: map["lookForDevs"] ?? false,
       lookForWork: map["lookForWork"] ?? false,
       lookToCollab: map["lookToCollab"] ?? false,
@@ -56,7 +56,7 @@ class UserData {
       "username": username,
       "about": about,
       "city": city,
-      "hideFromMaps": hideFromMaps,
+      "hideMaps": hideCity,
       "lookForDevs": lookForDevs,
       "lookForWork": lookForWork,
       "lookToCollab": lookToCollab,
@@ -204,14 +204,13 @@ class User with ChangeNotifier {
     }
 
     add(data.hideEmail, "email", _user.email);
-    add(data.hideFromMaps, "city", data.city);
+    add(data.hideCity, "city", data.city);
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
 
       await ref.document("public").setData(publicMap);
-      if (privateMap.length > 0)
-        await ref.document("private").setData(privateMap);
+      await ref.document("private").setData(privateMap);
       return true;
     } catch (e) {
       print("updateUserData: $e");

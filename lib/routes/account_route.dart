@@ -236,7 +236,7 @@ class _AccountRouteState extends State<AccountRoute> {
             icon: Icon(Icons.location_city),
           ),
           validator: (String str) {
-            if (!_userData.hideFromMaps && str.isEmpty) return "Please type your city";
+            if (!_userData.hideCity && str.isEmpty) return "Please type your city";
             return null;
           },
         ),
@@ -362,9 +362,9 @@ class _AccountRouteState extends State<AccountRoute> {
             _text("Tell me about yourself"),
             _buildFormFields(),
             _buildSwitch(
-              () => _userData.hideFromMaps = !_userData.hideFromMaps,
-              "Hide from maps",
-              _userData.hideFromMaps,
+              () => _userData.hideCity = !_userData.hideCity,
+              "Hide city from others",
+              _userData.hideCity,
             ),
             _buildEmail(context),
             _buildSwitch(
