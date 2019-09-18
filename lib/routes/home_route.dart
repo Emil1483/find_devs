@@ -97,7 +97,6 @@ class HomeRoute extends StatelessWidget {
         ],
       ),
       drawer: _buildDrawer(context),
-      //TODO: Use this to add implement maps https://youtu.be/MYHVyl-juUk
     );
   }
 }
