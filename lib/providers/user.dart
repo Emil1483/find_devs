@@ -37,13 +37,17 @@ class UserData {
     @required this.email,
   });
 
-  factory UserData.fromMap(Map<String, dynamic> map,
-      {String username, String email}) {
+  factory UserData.fromMap(
+    Map<String, dynamic> map, {
+    String username,
+    String email,
+    String city,
+  }) {
     return UserData(
       username: map["username"] ?? username,
       email: map["email"] ?? email,
+      city: map["city"] ?? city,
       about: map["about"] ?? null,
-      city: map["city"] ?? null,
       hideCity: map["hideMaps"] ?? false,
       lookForDevs: map["lookForDevs"] ?? false,
       lookForWork: map["lookForWork"] ?? false,
@@ -215,7 +219,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<bool> _addToPlace(UserData data) async {
+  Future<bool> _addToPlaces(UserData data) async {
     try {
       var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
       final ref = _db
@@ -248,7 +252,7 @@ class User with ChangeNotifier {
     data.city = addresses.first.featureName;
 
     if (!await _removeFromPlaces()) return false;
-    if (!data.hideCity) if (!await _addToPlace(data)) return false;
+    if (!data.hideCity) if (!await _addToPlaces(data)) return false;
 
     void add(bool hide, String key, dynamic val) {
       if (!hide) return;
@@ -299,6 +303,25 @@ class User with ChangeNotifier {
     return map;
   }
 
+  Future<String> _getCity() async {
+    return null;
+    /*
+    var location = new Location();
+    try {
+      LocationData locationData = await location.getLocation();
+      if (locationData == null) return null;
+      final addresses = await Geocoder.local.findAddressesFromCoordinates(
+        Coordinates(locationData.latitude, locationData.longitude),
+      );
+      if (addresses == null) return null;
+      print(addresses.first.toMap());
+      return null;
+    } catch (e) {
+      return null;
+    }
+    */
+  }
+
   Future<UserData> getUserData({bool shouldFix = false}) async {
     if (await _noInternet()) return null;
     DocumentSnapshot public;
@@ -319,10 +342,13 @@ class User with ChangeNotifier {
       private.exists ? private.data : {},
     ]);
 
+    String city = await _getCity();
+
     UserData userData = UserData.fromMap(
       data,
       email: _user.email,
       username: _user.displayName,
+      city: city,
       // TODO: get city using https://pub.dev/packages/location and https://pub.dev/packages/geocoder
     );
 
