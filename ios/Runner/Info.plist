@@ -41,5 +41,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<value>Needs to know your location to autofill the the city field</value>
+
+	<key>NSLocationAlwaysUsageDescription</key>
+	<value>Needs to know your location to always autofill the the city field</value>
 </dict>
 </plist>
