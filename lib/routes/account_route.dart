@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:geocoder/geocoder.dart';
 
 import './home_route.dart';
 import '../providers/user.dart';

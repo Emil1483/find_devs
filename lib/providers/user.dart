@@ -346,7 +346,6 @@ class User with ChangeNotifier {
       email: _user.email,
       username: _user.displayName,
       city: city,
-      // TODO: get city using https://pub.dev/packages/location and https://pub.dev/packages/geocoder
     );
 
     if (shouldFix && _shouldUpdate(data)) updateUserData(userData);
