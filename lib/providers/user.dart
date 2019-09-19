@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 
 enum AuthError {
   UserNotFound,
@@ -304,22 +305,17 @@ class User with ChangeNotifier {
   }
 
   Future<String> _getCity() async {
-    return null;
-    /*
-    var location = new Location();
     try {
-      LocationData locationData = await location.getLocation();
-      if (locationData == null) return null;
+      Position pos = await Geolocator().getCurrentPosition();
       final addresses = await Geocoder.local.findAddressesFromCoordinates(
-        Coordinates(locationData.latitude, locationData.longitude),
+        Coordinates(pos.latitude, pos.longitude),
       );
-      if (addresses == null) return null;
       print(addresses.first.toMap());
-      return null;
+      return addresses.first.locality;
     } catch (e) {
+      print("could not get city: $e");
       return null;
     }
-    */
   }
 
   Future<UserData> getUserData({bool shouldFix = false}) async {
