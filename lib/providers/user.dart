@@ -277,6 +277,7 @@ class User with ChangeNotifier {
   }
 
   bool _shouldUpdate(Map<String, dynamic> map) {
+    //TODO: Check if info is in places/ as well
     for (String key in UserData.fromMap({}).toMap().keys) {
       if (map[key] == null) return true;
     }
