@@ -46,9 +46,7 @@ class _AccountRouteState extends State<AccountRoute> {
   Future<bool> _getUser() async {
     final User user = Provider.of<User>(context, listen: false);
 
-    _userData = await user.getUserData(
-      shouldFix: Navigator.of(context).canPop(),
-    );
+    _userData = await user.getUserData();
     if (_userData == null) {
       setState(() {
         _loading = false;

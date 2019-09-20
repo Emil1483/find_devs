@@ -276,14 +276,6 @@ class User with ChangeNotifier {
     }
   }
 
-  bool _shouldUpdate(Map<String, dynamic> map) {
-    //TODO: Check if info is in places/ as well
-    for (String key in UserData.fromMap({}).toMap().keys) {
-      if (map[key] == null) return true;
-    }
-    return false;
-  }
-
   Map<String, dynamic> _unpack(Map data) {
     Map<String, dynamic> map = {};
     for (var entrie in data.entries) {
@@ -318,7 +310,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<UserData> getUserData({bool shouldFix = false}) async {
+  Future<UserData> getUserData() async {
     if (await _noInternet()) return null;
     DocumentSnapshot public;
     DocumentSnapshot private;
@@ -346,8 +338,6 @@ class User with ChangeNotifier {
       username: _user.displayName,
       city: city,
     );
-
-    if (shouldFix && _shouldUpdate(data)) updateUserData(userData);
 
     return userData;
   }
