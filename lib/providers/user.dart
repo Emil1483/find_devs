@@ -311,7 +311,6 @@ class User with ChangeNotifier {
       final addresses = await Geocoder.local.findAddressesFromCoordinates(
         Coordinates(pos.latitude, pos.longitude),
       );
-      print(addresses.first.toMap());
       return addresses.first.locality;
     } catch (e) {
       print("could not get city: $e");
