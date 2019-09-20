@@ -329,7 +329,7 @@ class User with ChangeNotifier {
       public = await ref.document("public").get();
       private = await ref.document("private").get();
     } catch (e) {
-      print("could not get user data: $e, \nimplement error handeling!");
+      print("could not get user data: $e");
       return null;
     }
 
