@@ -228,7 +228,7 @@ class _AccountRouteState extends State<AccountRoute> {
         TextFormField(
           controller: _city,
           decoration: InputDecoration(
-            labelText: "City",
+            labelText: "City/state",
             icon: Icon(Icons.location_city),
           ),
           onSaved: (String val) {
