@@ -285,6 +285,7 @@ class _AccountRouteState extends State<AccountRoute> {
                     title: "Could not find address",
                     content: "Please try another",
                   );
+                  setState(() => _saving = false);
                   return;
                 }
                 _userData.city = city;
