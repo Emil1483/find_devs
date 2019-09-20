@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoder/geocoder.dart';
 
 import './home_route.dart';
 import '../providers/user.dart';
@@ -230,6 +231,9 @@ class _AccountRouteState extends State<AccountRoute> {
             labelText: "City",
             icon: Icon(Icons.location_city),
           ),
+          onSaved: (String val) {
+            _userData.city = val.trim();
+          },
           validator: (String value) {
             if (!_userData.hideCity && value.isEmpty)
               return "Please type your city";
@@ -273,6 +277,19 @@ class _AccountRouteState extends State<AccountRoute> {
                 setState(() => _saving = true);
 
                 final User user = Provider.of<User>(context, listen: false);
+
+                String city = await user.getCityFromQuery(_userData.city);
+                if (city == null) {
+                  showAlertDialog(
+                    context,
+                    title: "Could not find address",
+                    content: "Please try another",
+                  );
+                  return;
+                }
+                _userData.city = city;
+                setState(() => _city.text = _userData.city);
+
                 final bool result = await user.updateUserData(_userData);
                 if (!result) {
                   showAlertDialog(

@@ -248,10 +248,6 @@ class User with ChangeNotifier {
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
 
-    var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
-    if (addresses.length == 0) return false;
-    data.city = addresses.first.featureName;
-
     if (!await _removeFromPlaces()) return false;
     if (!data.hideCity) if (!await _addToPlaces(data)) return false;
 
@@ -297,15 +293,32 @@ class User with ChangeNotifier {
     return map;
   }
 
+  Future<String> _getCityFromAddresses(List<Address> addresses) async {
+    print(addresses.first.toMap());
+    Address address = addresses.first;
+    if (address.subAdminArea != null) return address.subAdminArea;
+    return address.adminArea;
+  }
+
   Future<String> _getCity() async {
     try {
       Position pos = await Geolocator().getCurrentPosition();
       final addresses = await Geocoder.local.findAddressesFromCoordinates(
         Coordinates(pos.latitude, pos.longitude),
       );
-      return addresses.first.locality;
+      return _getCityFromAddresses(addresses);
     } catch (e) {
       print("could not get city: $e");
+      return null;
+    }
+  }
+
+  Future<String> getCityFromQuery(String query) async {
+    try {
+      var addresses = await Geocoder.local.findAddressesFromQuery(query);
+      return _getCityFromAddresses(addresses);
+    } catch (e) {
+      print("could not get city from query: $e");
       return null;
     }
   }
