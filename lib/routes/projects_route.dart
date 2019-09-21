@@ -10,6 +10,12 @@ class ProjectsRoute extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Find Projects"),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.chat),
+            onPressed: () {},
+          ),
+        ],
       ),
       drawer: MainDrawer(),
     );
