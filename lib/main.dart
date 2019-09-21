@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './routes/home_route.dart';
 import './routes/auth_route.dart';
 import './routes/loading_route.dart';
+import './routes/projects_route.dart';
 import './routes/account_route.dart';
 import './providers/user.dart';
 
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
           HomeRoute.routeName: (_) => HomeRoute(),
           AuthRoute.routeName: (_) => AuthRoute(),
           AccountRoute.routeName: (_) => AccountRoute(),
+          ProjectsRoute.routeName: (_) => ProjectsRoute(),
         },
         home: LoadingRoute(),
       ),
