@@ -25,6 +25,7 @@ class UserData {
   String about;
   String city;
   String email;
+  String imageUrl;
 
   UserData({
     @required this.lookForDevs,
@@ -36,6 +37,7 @@ class UserData {
     @required this.hideCity,
     @required this.hideEmail,
     @required this.email,
+    @required this.imageUrl,
   });
 
   factory UserData.fromMap(
@@ -43,6 +45,7 @@ class UserData {
     String username,
     String email,
     String city,
+    String imageUrl,
   }) {
     return UserData(
       username: map["username"] ?? username,
@@ -54,6 +57,7 @@ class UserData {
       lookForWork: map["lookForWork"] ?? false,
       lookToCollab: map["lookToCollab"] ?? false,
       hideEmail: map["hideEmail"] ?? false,
+      imageUrl: map["imageUrl"] ?? imageUrl,
     );
   }
 
@@ -68,6 +72,7 @@ class UserData {
       "lookToCollab": lookToCollab,
       "hideEmail": hideEmail,
       "email": email,
+      "imageUrl": imageUrl,
     };
   }
 }
@@ -220,20 +225,16 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<bool> _addToPlaces(UserData data) async {
+  Future<bool> _addToPlaces(String city, Map<String, dynamic> data) async {
     try {
-      var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
+      var addresses = await Geocoder.local.findAddressesFromQuery(city);
       final ref = _db
           .collection("places")
           .document(addresses.first.coordinates.toString());
       await ref.setData({
-        "city": data.city,
+        "city": city,
         "country": addresses.first.countryName,
-        _user.uid: {
-          "lookForDevs": data.lookForDevs,
-          "lookForWork": data.lookForWork,
-          "lookToCollab": data.lookToCollab,
-        },
+        _user.uid: data,
       }, merge: true);
       return true;
     } catch (e) {
@@ -248,9 +249,6 @@ class User with ChangeNotifier {
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
 
-    if (!await _removeFromPlaces()) return false;
-    if (!data.hideCity) if (!await _addToPlaces(data)) return false;
-
     void add(bool hide, String key, dynamic val) {
       if (!hide) return;
       privateMap[key] = val;
@@ -259,6 +257,12 @@ class User with ChangeNotifier {
 
     add(data.hideEmail, "email", _user.email);
     add(data.hideCity, "city", data.city);
+
+    if (!await _removeFromPlaces()) return false;
+    if (!data.hideCity) if (!await _addToPlaces(data.city, publicMap)) {
+      return false;
+    }
+
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
@@ -294,7 +298,6 @@ class User with ChangeNotifier {
   }
 
   Future<String> _getCityFromAddresses(List<Address> addresses) async {
-    print(addresses.first.toMap());
     Address address = addresses.first;
     if (address.subAdminArea != null) return address.subAdminArea;
     return address.adminArea;
@@ -350,6 +353,7 @@ class User with ChangeNotifier {
       email: _user.email,
       username: _user.displayName,
       city: city,
+      imageUrl: _user.photoUrl,
     );
 
     return userData;
