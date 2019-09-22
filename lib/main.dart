@@ -7,6 +7,7 @@ import './routes/loading_route.dart';
 import './routes/projects_route.dart';
 import './routes/account_route.dart';
 import './providers/user.dart';
+import './providers/devs.dart';
 
 void main() => runApp(MyApp());
 
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: User()),
+        ChangeNotifierProvider.value(value: Devs()),
       ],
       child: MaterialApp(
         title: 'Find Devs',
