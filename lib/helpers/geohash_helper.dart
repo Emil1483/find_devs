@@ -24,6 +24,14 @@ class GeohashHelper {
     _totalCells = pow(32, geohashLength);
   }
 
+  static String getHash(double lat, double lng) {
+    return Geohash.encode(
+      lat,
+      lng,
+      codeLength: geohashLength,
+    );
+  }
+
   Offset _rotated(Offset offset) {
     return Offset.fromDirection(offset.direction + pi / 2);
   }
@@ -64,11 +72,8 @@ class GeohashHelper {
       _format(lat + _pos.dy * _cellHeight),
       _format(lng + _pos.dx * _cellWidth),
     );
-    String result = Geohash.encode(
-      place.dx,
-      place.dy,
-      codeLength: geohashLength,
-    );
+    String result = getHash(place.dx, place.dy);
+    
     if (_results.contains(result)) return next();
     _results.add(result);
 

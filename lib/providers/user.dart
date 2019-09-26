@@ -7,6 +7,8 @@ import 'package:connectivity/connectivity.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../helpers/geohash_helper.dart';
+
 enum AuthError {
   UserNotFound,
   ExistingUser,
@@ -203,7 +205,7 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _removeFromPlaces() async {
-    //TODO use geohash from userdata if change is present, to remove
+    //TODO use geohash to remove if change is present
     try {
       final ref = await _db.collection("places").getDocuments();
       Map<String, dynamic> newData;
@@ -227,15 +229,15 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _addToPlaces(String city, Map<String, dynamic> data) async {
-    //TODO use geohash instead
     try {
       var addresses = await Geocoder.local.findAddressesFromQuery(city);
-      final ref = _db
-          .collection("places")
-          .document(addresses.first.coordinates.toString());
+      Coordinates coordinates = addresses.first.coordinates;
+      String hash = GeohashHelper.getHash(
+        coordinates.latitude,
+        coordinates.longitude,
+      );
+      final ref = _db.collection("places").document(hash);
       await ref.setData({
-        "city": city,
-        "country": addresses.first.countryName,
         _user.uid: data,
       }, merge: true);
       return true;
@@ -246,7 +248,6 @@ class User with ChangeNotifier {
   }
 
   Future<bool> updateUserData(UserData data) async {
-    //TODO add geohash to userdata
     if (await _noInternet()) return false;
 
     Map<String, dynamic> privateMap = {};
