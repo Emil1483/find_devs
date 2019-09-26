@@ -98,13 +98,5 @@ class Devs with ChangeNotifier {
     );
 
     return result;
-    /*
-    final documentsData = await _db.collection("places").getDocuments();
-    List<Map<String, dynamic>> result = [];
-    documentsData.documents.forEach((DocumentSnapshot snap) {
-      if (snap.data.length > 0) result.add(snap.data);
-    });
-    return result;
-    */
   }
 }
