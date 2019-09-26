@@ -205,7 +205,7 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _removeFromPlaces() async {
-    //TODO use geohash to remove if change is present
+    //TODO use geohash to remove if change is present or if hidecity is true
     try {
       final ref = await _db.collection("places").getDocuments();
       Map<String, dynamic> newData;
