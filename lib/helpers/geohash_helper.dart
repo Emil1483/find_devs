@@ -51,7 +51,6 @@ class GeohashHelper {
   }
 
   String next() {
-    // It finally works!! 🎉🎉🎉
     //TODO optimize
     if (_results.length >= _totalCells) return null;
 
@@ -72,7 +71,6 @@ class GeohashHelper {
     );
     if (_results.contains(result)) return next();
     _results.add(result);
-    print("num: ${_results.length}, hash: $result");
 
     return result;
   }

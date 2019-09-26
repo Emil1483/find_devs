@@ -203,6 +203,7 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _removeFromPlaces() async {
+    //TODO use geohash from userdata if change is present, to remove
     try {
       final ref = await _db.collection("places").getDocuments();
       Map<String, dynamic> newData;
@@ -226,6 +227,7 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _addToPlaces(String city, Map<String, dynamic> data) async {
+    //TODO use geohash instead
     try {
       var addresses = await Geocoder.local.findAddressesFromQuery(city);
       final ref = _db
@@ -244,15 +246,15 @@ class User with ChangeNotifier {
   }
 
   Future<bool> updateUserData(UserData data) async {
+    //TODO add geohash to userdata
     if (await _noInternet()) return false;
 
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
 
     void add(bool hide, String key, dynamic val) {
-      if (!hide) return;
       privateMap[key] = val;
-      publicMap.remove(key);
+      if (hide) publicMap.remove(key);
     }
 
     add(data.hideEmail, "email", _user.email);

@@ -22,8 +22,13 @@ class HomeRoute extends StatelessWidget {
       ),
       drawer: MainDrawer(),
       body: ListView.builder(
-        itemCount: null,
+        itemCount: devs.loadedAll ? devs.length : null,
         itemBuilder: (BuildContext context, int index) {
+         // return Container(
+         //   height: 100,
+         //   color: Color.lerp(Colors.orange, Colors.pink, index / 10),
+         // );
+          
           return FutureBuilder(
             future: devs.getUser(index),
             builder: (BuildContext context,
@@ -42,6 +47,7 @@ class HomeRoute extends StatelessWidget {
               }
             },
           );
+          
         },
       ),
     );
