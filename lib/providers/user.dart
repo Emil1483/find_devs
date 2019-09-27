@@ -209,7 +209,6 @@ class User with ChangeNotifier {
   }
 
   Future<bool> _removeFromPlaces(String prevHash) async {
-    //TODO use geohash to remove if change is present or if hidecity is true
     if (prevHash == null) return true;
     try {
       DocumentReference ref = _db.collection("places").document(prevHash);
