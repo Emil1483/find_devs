@@ -90,11 +90,13 @@ class Devs with ChangeNotifier {
     }
     print(snap.data);
     List<Map<String, dynamic>> result = [];
-    snap.data.forEach(
-      (key, val) => result.add(
-        {key: val},
-      ),
-    );
+    FirebaseUser firebaseUser = await _auth.currentUser();
+    String uid = firebaseUser.uid;
+    snap.data.forEach((key, val) {
+      if (uid != key) {
+        result.add({key: val});
+      }
+    });
 
     return result;
   }
