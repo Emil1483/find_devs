@@ -28,6 +28,7 @@ class UserData {
   String city;
   String email;
   String imageUrl;
+  String geoHash;
 
   UserData({
     @required this.lookForDevs,
@@ -40,6 +41,7 @@ class UserData {
     @required this.hideEmail,
     @required this.email,
     @required this.imageUrl,
+    @required this.geoHash,
   });
 
   factory UserData.fromMap(
@@ -60,6 +62,7 @@ class UserData {
       lookToCollab: map["lookToCollab"] ?? false,
       hideEmail: map["hideEmail"] ?? false,
       imageUrl: map["imageUrl"] ?? imageUrl,
+      geoHash: map["geoHash"] ?? null,
     );
   }
 
@@ -75,6 +78,7 @@ class UserData {
       "hideEmail": hideEmail,
       "email": email,
       "imageUrl": imageUrl,
+      "geoHash": geoHash,
     };
   }
 }
@@ -204,23 +208,16 @@ class User with ChangeNotifier {
     return false;
   }
 
-  Future<bool> _removeFromPlaces() async {
+  Future<bool> _removeFromPlaces(String prevHash) async {
     //TODO use geohash to remove if change is present or if hidecity is true
+    if (prevHash == null) return true;
     try {
-      final ref = await _db.collection("places").getDocuments();
-      Map<String, dynamic> newData;
-      String id;
-      ref.documents.forEach((DocumentSnapshot snapshot) {
-        if (snapshot.data[_user.uid] != null) {
-          newData = snapshot.data;
-          newData.remove(_user.uid);
-          id = snapshot.documentID;
-          return;
-        }
-      });
-      if (id == null) return true;
-
-      await _db.collection("places").document(id).setData(newData);
+      DocumentReference ref = _db.collection("places").document(prevHash);
+      DocumentSnapshot snap = await ref.get();
+      if (!snap.exists || snap.data[_user.uid] == null) return true;
+      Map<String, dynamic> data = snap.data;
+      data.remove(_user.uid);
+      await ref.setData(data);
       return true;
     } catch (e) {
       print(e);
@@ -228,15 +225,9 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<bool> _addToPlaces(String city, Map<String, dynamic> data) async {
+  Future<bool> _addToPlaces(String geoHash, Map<String, dynamic> data) async {
     try {
-      var addresses = await Geocoder.local.findAddressesFromQuery(city);
-      Coordinates coordinates = addresses.first.coordinates;
-      String hash = GeohashHelper.getHash(
-        coordinates.latitude,
-        coordinates.longitude,
-      );
-      final ref = _db.collection("places").document(hash);
+      final ref = _db.collection("places").document(geoHash);
       await ref.setData({
         _user.uid: data,
       }, merge: true);
@@ -244,6 +235,22 @@ class User with ChangeNotifier {
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<String> _getPrevGeoHash() async {
+    try {
+      DocumentReference ref = _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("private");
+      DocumentSnapshot snap = await ref.get();
+      if (!snap.exists || snap.data["geoHash"] == null) return null;
+      return snap.data["geoHash"];
+    } catch (e) {
+      print(e);
+      return null;
     }
   }
 
@@ -261,8 +268,21 @@ class User with ChangeNotifier {
     add(data.hideEmail, "email", _user.email);
     add(data.hideCity, "city", data.city);
 
-    if (!await _removeFromPlaces()) return false;
-    if (!data.hideCity) if (!await _addToPlaces(data.city, publicMap)) {
+    var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
+    Coordinates coordinates = addresses.first.coordinates;
+    String geoHash = GeohashHelper.getHash(
+      coordinates.latitude,
+      coordinates.longitude,
+    );
+
+    add(true, "geoHash", geoHash);
+
+    String prevHash = await _getPrevGeoHash();
+
+    if (prevHash != geoHash || data.hideCity) {
+      if (!await _removeFromPlaces(prevHash)) return false;
+    }
+    if (!data.hideCity) if (!await _addToPlaces(geoHash, publicMap)) {
       return false;
     }
 
