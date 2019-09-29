@@ -44,6 +44,9 @@ class UserData {
     @required this.geoHash,
   });
 
+  @override
+  String toString() => toMap().toString();
+
   factory UserData.fromMap(
     Map<String, dynamic> map, {
     String username,
