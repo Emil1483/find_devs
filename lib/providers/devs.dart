@@ -89,7 +89,6 @@ class Devs with ChangeNotifier {
     String uid = firebaseUser.uid;
     snap.data.forEach((key, val) {
       if (uid != key) {
-        print(val);
         Map<String, dynamic> data = Map<String, dynamic>.from(val);
         result.add(UserData.fromMap(data));
       }
