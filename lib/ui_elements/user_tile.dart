@@ -9,18 +9,17 @@ class UserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8.0),
-      child: Container(
-        height: 182.0,
-        color: Theme.of(context).cardColor,
-        child: Column(
-          children: <Widget>[
-            Text(userData.username),
-            Text(userData.about),
-          ],
-        ),
-      ),
+    return ListTile(
+      leading: userData.imageUrl == null
+          ? Icon(Icons.person)
+          : CircleAvatar(
+              backgroundImage: NetworkImage(
+                userData.imageUrl,
+              ),
+            ),
+      title: Text(userData.username),
+      subtitle: Text(userData.about),
+      onTap: () {},
     );
   }
 }
