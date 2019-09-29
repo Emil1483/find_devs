@@ -73,6 +73,7 @@ class Devs with ChangeNotifier {
         return;
       }
       _users.addAll(moreUsers);
+      notifyListeners();
     }
     _working = false;
   }

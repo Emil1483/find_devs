@@ -22,13 +22,8 @@ class HomeRoute extends StatelessWidget {
       ),
       drawer: MainDrawer(),
       body: ListView.builder(
-        itemCount: devs.loadedAll ? devs.length : null,
+        itemCount: devs.loadedAll ? devs.length : devs.length + 1,
         itemBuilder: (BuildContext context, int index) {
-         // return Container(
-         //   height: 100,
-         //   color: Color.lerp(Colors.orange, Colors.pink, index / 10),
-         // );
-          
           return FutureBuilder(
             future: devs.getUser(index),
             builder: (BuildContext context,
@@ -36,7 +31,8 @@ class HomeRoute extends StatelessWidget {
               if (snapData.connectionState != ConnectionState.done) {
                 return Container(
                   height: 100,
-                  color: Color.lerp(Colors.orange, Colors.pink, index / 10),
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
                 );
               } else {
                 return Container(
@@ -47,7 +43,6 @@ class HomeRoute extends StatelessWidget {
               }
             },
           );
-          
         },
       ),
     );
