@@ -4,18 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoder/geocoder.dart';
 
 import '../helpers/geohash_helper.dart';
+import './user.dart';
 
 class Devs with ChangeNotifier {
   final Firestore _db = Firestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<Map<String, dynamic>> _users = [
-    {"1": 1},
-    {"1": 1},
-    {"1": 1},
-    {"1": 1},
-    {"1": 1},
-  ];
+  List<UserData> _users = [];
   int _wantedLen = 0;
   bool _working = false;
   bool _loadedAllUsers = false;
@@ -47,7 +42,7 @@ class Devs with ChangeNotifier {
     _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
   }
 
-  Future<Map<String, dynamic>> getUser(int index) async {
+  Future<UserData> getUser(int index) async {
     if (index < _users.length) return _users[index];
     _getMore(index + 1);
     while (index >= _users.length) {
@@ -64,7 +59,7 @@ class Devs with ChangeNotifier {
     if (_loadedAllUsers) return;
     _working = true;
     while (_users.length < _wantedLen) {
-      final List<Map<String, dynamic>> moreUsers = await _moreUsers();
+      final List<UserData> moreUsers = await _moreUsers();
       if (moreUsers == null) {
         _loadedAllUsers = true;
         _working = false;
@@ -78,7 +73,7 @@ class Devs with ChangeNotifier {
     _working = false;
   }
 
-  Future<List<Map<String, dynamic>>> _moreUsers() async {
+  Future<List<UserData>> _moreUsers() async {
     while (_geohash == null) await Future.delayed(Duration(milliseconds: 500));
 
     final ref = _db.collection("places");
@@ -89,13 +84,14 @@ class Devs with ChangeNotifier {
       if (hash == null) return null;
       snap = await ref.document(hash).get();
     }
-    print(snap.data);
-    List<Map<String, dynamic>> result = [];
+    List<UserData> result = [];
     FirebaseUser firebaseUser = await _auth.currentUser();
     String uid = firebaseUser.uid;
     snap.data.forEach((key, val) {
       if (uid != key) {
-        result.add({key: val});
+        print(val);
+        Map<String, dynamic> data = Map<String, dynamic>.from(val);
+        result.add(UserData.fromMap(data));
       }
     });
 

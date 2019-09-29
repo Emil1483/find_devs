@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../ui_elements/main_drawer.dart';
 import '../providers/devs.dart';
+import '../providers/user.dart';
 
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
@@ -27,7 +28,7 @@ class HomeRoute extends StatelessWidget {
           return FutureBuilder(
             future: devs.getUser(index),
             builder: (BuildContext context,
-                AsyncSnapshot<Map<String, dynamic>> snapData) {
+                AsyncSnapshot<UserData> snapData) {
               if (snapData.connectionState != ConnectionState.done) {
                 return Container(
                   height: 100,
