@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
           canvasColor: Color(0xFF161B21),
           accentColor: Color(0xFFF4A342),
           toggleableActiveColor: Color(0xFFF4A342),
+          cardColor: Color(0xFF444444),
           appBarTheme: AppBarTheme(
             color: Color(0xFF222A33),
             textTheme: TextTheme(

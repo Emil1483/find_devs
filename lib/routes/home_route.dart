@@ -25,6 +25,7 @@ class HomeRoute extends StatelessWidget {
       drawer: MainDrawer(),
       body: ListView.builder(
         itemCount: devs.loadedAll ? devs.length : devs.length + 1,
+        padding: EdgeInsets.symmetric(horizontal: 8.0),
         itemBuilder: (BuildContext context, int index) {
           return FutureBuilder(
             future: devs.getUser(index),

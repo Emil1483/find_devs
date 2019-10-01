@@ -75,25 +75,29 @@ class Devs with ChangeNotifier {
 
   Future<List<UserData>> _moreUsers() async {
     while (_geohash == null) await Future.delayed(Duration(milliseconds: 500));
-
-    final ref = _db.collection("places");
-    DocumentSnapshot snap;
-    String hash;
-    while (snap == null || snap.data == null || snap.data.length == 0) {
-      hash = _geohash.next();
-      if (hash == null) return null;
-      snap = await ref.document(hash).get();
-    }
-    List<UserData> result = [];
-    FirebaseUser firebaseUser = await _auth.currentUser();
-    String uid = firebaseUser.uid;
-    snap.data.forEach((key, val) {
-      if (uid != key) {
-        Map<String, dynamic> data = Map<String, dynamic>.from(val);
-        result.add(UserData.fromMap(data));
+    try {
+      final ref = _db.collection("places");
+      DocumentSnapshot snap;
+      String hash;
+      while (snap == null || snap.data == null || snap.data.length == 0) {
+        hash = _geohash.next();
+        if (hash == null) return null;
+        snap = await ref.document(hash).get();
       }
-    });
+      List<UserData> result = [];
+      FirebaseUser firebaseUser = await _auth.currentUser();
+      String uid = firebaseUser.uid;
+      snap.data.forEach((key, val) {
+        if (uid != key) {
+          Map<String, dynamic> data = Map<String, dynamic>.from(val);
+          result.add(UserData.fromMap(data));
+        }
+      });
 
-    return result;
+      return result;
+    } catch (e) {
+      print(e);
+      return [];
+    }
   }
 }
