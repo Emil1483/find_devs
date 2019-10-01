@@ -8,6 +8,7 @@ class UserTile extends StatelessWidget {
   UserTile({@required this.userData});
 
   Widget _buildMain(BuildContext context) {
+    TextTheme theme = Theme.of(context).textTheme;
     return Row(
       children: <Widget>[
         Expanded(
@@ -28,9 +29,14 @@ class UserTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(userData.username),
+              Text(userData.username, style: theme.headline),
               SizedBox(height: 6.0),
-              Text(userData.about, maxLines: 5, overflow: TextOverflow.ellipsis),
+              Text(
+                userData.about,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+                style: theme.body1,
+              ),
             ],
           ),
         ),
@@ -40,6 +46,7 @@ class UserTile extends StatelessWidget {
 
   Widget _buildCheck(BuildContext context,
       {bool checked, IconData icon, String text}) {
+    TextTheme theme = Theme.of(context).textTheme;
     return Expanded(
       child: Column(
         children: <Widget>[
@@ -52,6 +59,7 @@ class UserTile extends StatelessWidget {
           Text(
             text,
             textAlign: TextAlign.center,
+            style: theme.subtitle,
           ),
         ],
       ),
@@ -59,6 +67,7 @@ class UserTile extends StatelessWidget {
   }
 
   Widget _buildBottom(BuildContext context) {
+    TextTheme theme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -87,7 +96,10 @@ class UserTile extends StatelessWidget {
         ),
         SizedBox(height: 16.0),
         Center(
-          child: Text(userData.city),
+          child: Text(
+            userData.city,
+            style: theme.overline,
+          ),
         ),
       ],
     );
@@ -95,23 +107,25 @@ class UserTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    BorderRadius borderRadius = BorderRadius.circular(8.0);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(4.0),
-        child: Material(
-          color: Theme.of(context).cardColor,
-          child: InkWell(
-            onTap: () {},
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-              child: Column(
-                children: <Widget>[
-                  _buildMain(context),
-                  SizedBox(height: 12.0),
-                  _buildBottom(context),
-                ],
-              ),
+      padding: EdgeInsets.only(top: 12.0),
+      child: Card(
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: borderRadius,
+        ),
+        child: InkWell(
+          borderRadius: borderRadius,
+          onTap: () {},
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 16.0),
+            child: Column(
+              children: <Widget>[
+                _buildMain(context),
+                SizedBox(height: 12.0),
+                _buildBottom(context),
+              ],
             ),
           ),
         ),
