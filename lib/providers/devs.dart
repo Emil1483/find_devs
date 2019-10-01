@@ -23,6 +23,7 @@ class Devs with ChangeNotifier {
 
   bool get loadedAll => _loadedAllUsers;
   int get length => _users.length;
+  UserData getUserByIndex(int index) => _users[index];
 
   void _init() async {
     FirebaseUser user = await _auth.currentUser();

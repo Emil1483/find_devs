@@ -27,22 +27,25 @@ class HomeRoute extends StatelessWidget {
         itemCount: devs.loadedAll ? devs.length : devs.length + 1,
         padding: EdgeInsets.symmetric(horizontal: 8.0),
         itemBuilder: (BuildContext context, int index) {
-          return FutureBuilder(
-            future: devs.getUser(index),
-            builder: (BuildContext context, AsyncSnapshot<UserData> snapData) {
-              if (snapData.connectionState != ConnectionState.done) {
-                return Container(
-                  height: 100,
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
+          return index <= devs.length - 1
+              ? UserTile(userData: devs.getUserByIndex(index))
+              : FutureBuilder(
+                  future: devs.getUser(index),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<UserData> snapData) {
+                    if (snapData.connectionState != ConnectionState.done) {
+                      return Container( //TODO: Try removing the if-test and return this every time
+                        height: 100,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return UserTile(
+                        userData: snapData.data,
+                      );
+                    }
+                  },
                 );
-              } else {
-                return UserTile(
-                  userData: snapData.data,
-                );
-              }
-            },
-          );
         },
       ),
     );
