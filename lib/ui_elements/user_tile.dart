@@ -141,7 +141,7 @@ class _UserTileState extends State<UserTile>
       child: Padding(
         padding: EdgeInsets.only(top: 12.0),
         child: Card(
-          elevation: 8,
+          elevation: 4,
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius,
           ),
