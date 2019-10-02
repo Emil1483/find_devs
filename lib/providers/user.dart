@@ -281,9 +281,7 @@ class User with ChangeNotifier {
 
     String prevHash = await _getPrevGeoHash();
 
-    if (prevHash != geoHash || data.hideCity) {
-      if (!await _removeFromPlaces(prevHash)) return false;
-    }
+    if (!await _removeFromPlaces(prevHash)) return false;
     if (!data.hideCity) if (!await _addToPlaces(geoHash, publicMap)) {
       return false;
     }
