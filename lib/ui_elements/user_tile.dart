@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../providers/user.dart';
+import '../routes/dev_details_route.dart';
 
 class UserTile extends StatefulWidget {
   final UserData userData;
@@ -150,7 +151,11 @@ class _UserTileState extends State<UserTile>
           ),
           child: InkWell(
             borderRadius: borderRadius,
-            onTap: () {},
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => DevDetailsRoute(userData: widget.userData),
+              ),
+            ),
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 14.0, vertical: 16.0),
               child: Column(
