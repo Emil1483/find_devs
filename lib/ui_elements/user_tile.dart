@@ -79,10 +79,13 @@ class _UserTileState extends State<UserTile>
                 ? Theme.of(context).accentColor
                 : Theme.of(context).disabledColor,
           ),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: theme.subtitle,
+          Container(
+            width: 82,
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: theme.subtitle,
+            ),
           ),
         ],
       ),
