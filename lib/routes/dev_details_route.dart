@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/user.dart';
 import '../ui_elements/gradient button.dart';
@@ -127,12 +128,19 @@ class DevDetailsRoute extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              if (userData.email != null) _buildButton(
-                context,
-                icon: Icons.email,
-                text: "Send Email",
-                onTap: () {},
-              ),
+              if (userData.email != null)
+                _buildButton(
+                  context,
+                  icon: Icons.email,
+                  text: "Send Email",
+                  onTap: () async {
+                    final url = "mailto:${userData.email}";
+                    if (await canLaunch(url))
+                      await launch(url);
+                    else
+                      throw "Could not launch $url";
+                  },
+                ),
               _buildButton(
                 context,
                 icon: Icons.message,
