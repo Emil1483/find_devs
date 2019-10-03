@@ -9,16 +9,15 @@ class DevDetailsRoute extends StatelessWidget {
 
   DevDetailsRoute({@required this.userData});
 
-  Widget _buildTop() {
+  Widget _buildImage() {
     return userData.imageUrl == null || userData.imageUrl.isEmpty
-        ? Container(
-            alignment: Alignment.center,
+        ? Center(
             child: Container(
               width: 184.0,
               child: Image.asset("assets/account.png"),
             ),
           )
-        : Align(
+        : Center(
             child: CircleAvatar(
               radius: 92.0,
               backgroundImage: NetworkImage(
@@ -26,6 +25,30 @@ class DevDetailsRoute extends StatelessWidget {
               ),
             ),
           );
+  }
+
+  Widget _buildTop(BuildContext context) {
+    bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    if (portrait) {
+      return Column(
+        children: <Widget>[
+          _buildImage(),
+          SizedBox(height: 24.0),
+          Text(userData.about, textAlign: TextAlign.center),
+        ],
+      );
+    } else {
+      return Row(
+        children: <Widget>[
+          Expanded(
+            child: _buildImage(),
+          ),
+          Expanded(
+            child: Text(userData.about),
+          ),
+        ],
+      );
+    }
   }
 
   Widget _buildCheck(BuildContext context,
@@ -96,9 +119,7 @@ class DevDetailsRoute extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
         children: <Widget>[
-          _buildTop(),
-          SizedBox(height: 24.0),
-          Text(userData.about, textAlign: TextAlign.center),
+          _buildTop(context),
           SizedBox(height: 24.0),
           Text(
             "City/state - ${userData.city}",
