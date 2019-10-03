@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
+import '../providers/devs.dart';
 import './home_route.dart';
 import './account_route.dart';
 import '../ui_elements/shrink.dart';
@@ -149,6 +150,7 @@ class _AuthRouteState extends State<AuthRoute>
   }
 
   void _getIn(User user) async {
+    Provider.of<Devs>(context).init();
     final route = await user.userDataExists()
         ? HomeRoute.routeName
         : AccountRoute.routeName;

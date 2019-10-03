@@ -18,14 +18,20 @@ class Devs with ChangeNotifier {
   GeohashHelper _geohash;
 
   Devs() {
-    _init();
+    init();
   }
 
   bool get loadedAll => _loadedAllUsers;
   int get length => _users.length;
   UserData getUserByIndex(int index) => _users[index];
 
-  void _init() async {
+  void init() async {
+    _users.clear();
+    _wantedLen = 0;
+    _working = false;
+    _loadedAllUsers = false;
+    notifyListeners();
+
     FirebaseUser user = await _auth.currentUser();
     if (user == null) return;
     DocumentSnapshot snap = await _db
