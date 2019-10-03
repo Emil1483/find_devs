@@ -9,9 +9,31 @@ import '../providers/user.dart';
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
 
+  Widget _buildBody(BuildContext context) {
+    Devs devs = Provider.of<Devs>(context);
+    return ListView.builder(
+      itemCount: devs.loadedAll ? devs.length : devs.length + 1,
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      itemBuilder: (BuildContext context, int index) {
+        if (index <= devs.length - 1) {
+          return UserTile(userData: devs.getUserByIndex(index));
+        }
+        return FutureBuilder(
+          future: devs.getUser(index),
+          builder: (BuildContext context, AsyncSnapshot<UserData> snapData) {
+            return Container(
+              height: 82.0,
+              alignment: Alignment.center,
+              child: CircularProgressIndicator(),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    Devs devs = Provider.of<Devs>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text("Find Developers"),
@@ -23,31 +45,7 @@ class HomeRoute extends StatelessWidget {
         ],
       ),
       drawer: MainDrawer(),
-      body: ListView.builder(
-        itemCount: devs.loadedAll ? devs.length : devs.length + 1,
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
-        itemBuilder: (BuildContext context, int index) {
-          return index <= devs.length - 1
-              ? UserTile(userData: devs.getUserByIndex(index))
-              : FutureBuilder(
-                  future: devs.getUser(index),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<UserData> snapData) {
-                    if (snapData.connectionState != ConnectionState.done) {
-                      return Container( //TODO: Try removing the if-test and return this every time
-                        height: 100,
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return UserTile(
-                        userData: snapData.data,
-                      );
-                    }
-                  },
-                );
-        },
-      ),
+      body: _buildBody(context),
     );
   }
 }
