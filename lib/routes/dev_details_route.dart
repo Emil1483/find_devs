@@ -18,10 +18,13 @@ class DevDetailsRoute extends StatelessWidget {
             ),
           )
         : Center(
-            child: CircleAvatar(
-              radius: 92.0,
-              backgroundImage: NetworkImage(
-                userData.imageUrl,
+            child: Hero(
+              tag: userData,
+              child: CircleAvatar(
+                radius: 92.0,
+                backgroundImage: NetworkImage(
+                  userData.imageUrl,
+                ),
               ),
             ),
           );

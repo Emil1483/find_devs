@@ -42,9 +42,12 @@ class _UserTileState extends State<UserTile>
                   widget.userData.imageUrl.isEmpty
               ? Center(child: Icon(Icons.person, size: 36.0))
               : Center(
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userData.imageUrl),
-                    radius: 22,
+                  child: Hero(
+                    tag: widget.userData,
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(widget.userData.imageUrl),
+                      radius: 22,
+                    ),
                   ),
                 ),
         ),
