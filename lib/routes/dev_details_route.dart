@@ -54,25 +54,43 @@ class DevDetailsRoute extends StatelessWidget {
   Widget _buildCheck(BuildContext context,
       {bool checked, IconData icon, String text}) {
     TextTheme theme = Theme.of(context).textTheme;
-    return Padding(
-      padding: EdgeInsets.only(top: 16.0),
-      child: Row(
+
+    Widget buildIcon() {
+      return Icon(
+        icon,
+        color: checked
+            ? Theme.of(context).accentColor
+            : Theme.of(context).disabledColor,
+      );
+    }
+
+    Widget buildText() {
+      return Text(
+        text,
+        textAlign: TextAlign.center,
+        style: theme.subhead.copyWith(fontWeight: FontWeight.w300),
+      );
+    }
+
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return Padding(
+        padding: EdgeInsets.only(top: 16.0),
+        child: Row(
+          children: <Widget>[
+            buildIcon(),
+            SizedBox(width: 16.0),
+            buildText(),
+          ],
+        ),
+      );
+    } else {
+      return Column(
         children: <Widget>[
-          Icon(
-            icon,
-            color: checked
-                ? Theme.of(context).accentColor
-                : Theme.of(context).disabledColor,
-          ),
-          SizedBox(width: 16.0),
-          Text(
-            text,
-            textAlign: TextAlign.center,
-            style: theme.subhead.copyWith(fontWeight: FontWeight.w300),
-          ),
+          buildIcon(),
+          buildText(),
         ],
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildButton(
@@ -109,6 +127,39 @@ class DevDetailsRoute extends StatelessWidget {
     );
   }
 
+  Widget _buildChecks(BuildContext context) {
+    List<Widget> children = [
+      _buildCheck(
+        context,
+        checked: userData.lookToCollab,
+        icon: Icons.code,
+        text: "Looking to Collaborate",
+      ),
+      _buildCheck(
+        context,
+        checked: userData.lookForWork,
+        icon: Icons.work,
+        text: "Looking for Work",
+      ),
+      _buildCheck(
+        context,
+        checked: userData.lookForDevs,
+        icon: Icons.person,
+        text: "Looking for Developers",
+      ),
+    ];
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return Column(
+        children: children,
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: children,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     TextTheme theme = Theme.of(context).textTheme;
@@ -127,25 +178,8 @@ class DevDetailsRoute extends StatelessWidget {
             style: theme.subhead,
           ),
           SizedBox(height: 12.0),
-          _buildCheck(
-            context,
-            checked: userData.lookToCollab,
-            icon: Icons.code,
-            text: "Looking to Collaborate",
-          ),
-          _buildCheck(
-            context,
-            checked: userData.lookForWork,
-            icon: Icons.work,
-            text: "Looking for Work",
-          ),
-          _buildCheck(
-            context,
-            checked: userData.lookForDevs,
-            icon: Icons.person,
-            text: "Looking for Developers",
-          ),
-          SizedBox(height: 42.0),
+          _buildChecks(context),
+          SizedBox(height: 32.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
