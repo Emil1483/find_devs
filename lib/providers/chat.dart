@@ -8,4 +8,6 @@ class Chat with ChangeNotifier {
   Chat(this._userData);
 
   UserData get userData => _userData.copy();
+
+  //TODO: Use https://medium.com/flutter-community/building-a-chat-app-with-flutter-and-firebase-from-scratch-9eaa7f41782e to complete the chat route
 }
