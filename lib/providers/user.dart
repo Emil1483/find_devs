@@ -84,6 +84,10 @@ class UserData {
       "geoHash": geoHash,
     };
   }
+
+  UserData copy() {
+    return UserData.fromMap(toMap());
+  }
 }
 
 String getErrorMessage(AuthError error) {

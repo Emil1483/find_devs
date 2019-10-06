@@ -7,8 +7,10 @@ import './routes/auth_route.dart';
 import './routes/loading_route.dart';
 import './routes/projects_route.dart';
 import './routes/account_route.dart';
+import './routes/chat_route.dart';
 import './providers/user.dart';
 import './providers/devs.dart';
+import './providers/chat.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(
@@ -78,6 +80,13 @@ class MyApp extends StatelessWidget {
           AuthRoute.routeName: (_) => AuthRoute(),
           AccountRoute.routeName: (_) => AccountRoute(),
           ProjectsRoute.routeName: (_) => ProjectsRoute(),
+          ChatRoute.routeName: (BuildContext context) {
+            UserData argument = ModalRoute.of(context).settings.arguments;
+            return ChangeNotifierProvider<Chat>.value(
+              value: Chat(argument),
+              child: ChatRoute(),
+            );
+          },
         },
         home: LoadingRoute(),
       ),

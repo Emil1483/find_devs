@@ -1,8 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
+import './chat_route.dart';
+import '../providers/chat.dart';
 import '../ui_elements/gradient button.dart';
+
+Widget _buildButton(
+  BuildContext context, {
+  String text,
+  IconData icon,
+  Function onTap,
+}) {
+  return GradientButton(
+    onPressed: onTap,
+    gradient: LinearGradient(
+      colors: [
+        Theme.of(context).accentColor,
+        Theme.of(context).indicatorColor,
+      ],
+      begin: FractionalOffset.centerLeft,
+      end: FractionalOffset.centerRight,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Icon(icon, color: Theme.of(context).canvasColor),
+        SizedBox(width: 6.0),
+        Text(
+          text,
+          style: TextStyle(
+            color: Theme.of(context).canvasColor,
+            fontWeight: FontWeight.w700,
+            fontSize: 14.0,
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
 class DevDetailsRoute extends StatelessWidget {
   final UserData userData;
@@ -96,40 +133,6 @@ class DevDetailsRoute extends StatelessWidget {
     }
   }
 
-  Widget _buildButton(
-    BuildContext context, {
-    String text,
-    IconData icon,
-    Function onTap,
-  }) {
-    return GradientButton(
-      onPressed: onTap,
-      gradient: LinearGradient(
-        colors: [
-          Theme.of(context).accentColor,
-          Theme.of(context).indicatorColor,
-        ],
-        begin: FractionalOffset.centerLeft,
-        end: FractionalOffset.centerRight,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, color: Theme.of(context).canvasColor),
-          SizedBox(width: 6.0),
-          Text(
-            text,
-            style: TextStyle(
-              color: Theme.of(context).canvasColor,
-              fontWeight: FontWeight.w700,
-              fontSize: 14.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildChecks(BuildContext context) {
     List<Widget> children = [
       _buildCheck(
@@ -203,7 +206,12 @@ class DevDetailsRoute extends StatelessWidget {
                 context,
                 icon: Icons.message,
                 text: "Send Message",
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushNamed(
+                    ChatRoute.routeName,
+                    arguments: userData,
+                  );
+                },
               ),
             ],
           ),
