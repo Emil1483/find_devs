@@ -29,6 +29,7 @@ class UserData {
   String email;
   String imageUrl;
   String geoHash;
+  String uid;
 
   UserData({
     @required this.lookForDevs,
@@ -42,6 +43,7 @@ class UserData {
     @required this.email,
     @required this.imageUrl,
     @required this.geoHash,
+    @required this.uid,
   });
 
   @override
@@ -53,6 +55,7 @@ class UserData {
     String email,
     String city,
     String imageUrl,
+    String uid,
   }) {
     return UserData(
       username: map["username"] ?? username,
@@ -66,6 +69,7 @@ class UserData {
       hideEmail: map["hideEmail"] ?? false,
       imageUrl: map["imageUrl"] ?? imageUrl,
       geoHash: map["geoHash"] ?? null,
+      uid: map["uid"] ?? uid,
     );
   }
 
@@ -82,6 +86,7 @@ class UserData {
       "email": email,
       "imageUrl": imageUrl,
       "geoHash": geoHash,
+      "uid": uid,
     };
   }
 

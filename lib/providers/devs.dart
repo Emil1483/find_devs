@@ -97,7 +97,7 @@ class Devs with ChangeNotifier {
       snap.data.forEach((key, val) {
         if (uid != key) {
           Map<String, dynamic> data = Map<String, dynamic>.from(val);
-          result.add(UserData.fromMap(data));
+          result.add(UserData.fromMap(data, uid: key));
         }
       });
 
