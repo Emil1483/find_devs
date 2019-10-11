@@ -81,9 +81,10 @@ class MyApp extends StatelessWidget {
           AccountRoute.routeName: (_) => AccountRoute(),
           ProjectsRoute.routeName: (_) => ProjectsRoute(),
           ChatRoute.routeName: (BuildContext context) {
-            UserData argument = ModalRoute.of(context).settings.arguments;
+            UserData userData = ModalRoute.of(context).settings.arguments;
+            String uid = Provider.of<User>(context).user.uid;
             return ChangeNotifierProvider<Chat>.value(
-              value: Chat(argument),
+              value: Chat(userData, uid),
               child: ChatRoute(),
             );
           },

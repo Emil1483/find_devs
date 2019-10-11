@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../providers/chat.dart';
 
@@ -14,9 +15,31 @@ class _ChatRouteState extends State<ChatRoute> {
   @override
   Widget build(BuildContext context) {
     Chat chat = Provider.of<Chat>(context);
+    chat.sendMessage("hello2");
     return Scaffold(
       appBar: AppBar(
         title: Text(chat.userData.username),
+      ),
+      body: StreamBuilder(
+        stream: chat.stream,
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            final dokuments = snapshot.data.documents;
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              reverse: true,
+              itemBuilder: (context, index) => Container(
+                height: 50,
+                margin: EdgeInsets.only(top: 16.0),
+                color: Colors.orangeAccent,
+              ),
+            );
+          }
+        },
       ),
     );
   }
