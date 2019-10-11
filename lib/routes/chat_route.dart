@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../providers/chat.dart';
+import '../ui_elements/message.dart';
 
 class ChatRoute extends StatefulWidget {
   static const String routeName = "/chat";
@@ -15,7 +16,6 @@ class _ChatRouteState extends State<ChatRoute> {
   @override
   Widget build(BuildContext context) {
     Chat chat = Provider.of<Chat>(context);
-    chat.sendMessage("hello2");
     return Scaffold(
       appBar: AppBar(
         title: Text(chat.userData.username),
@@ -32,10 +32,10 @@ class _ChatRouteState extends State<ChatRoute> {
             return ListView.builder(
               itemCount: snapshot.data.documents.length,
               reverse: true,
-              itemBuilder: (context, index) => Container(
-                height: 50,
-                margin: EdgeInsets.only(top: 16.0),
-                color: Colors.orangeAccent,
+              itemBuilder: (context, index) => Message(
+                MessageData.fromMap(
+                  dokuments[index].data,
+                ),
               ),
             );
           }

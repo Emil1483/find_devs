@@ -3,6 +3,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import './user.dart' show UserData;
 
+class MessageData {
+  final String from;
+  final String timestamp;
+  final String content;
+
+  MessageData({
+    @required this.from,
+    @required this.timestamp,
+    @required this.content,
+  });
+
+  factory MessageData.fromMap(Map<String, dynamic> map) {
+    return MessageData(
+      content: map["content"] ?? null,
+      from: map["from"] ?? null,
+      timestamp: map["timestamp"] ?? null,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "from": from,
+      "timestamp": timestamp,
+      "content": content,
+    };
+  }
+}
+
 class Chat with ChangeNotifier {
   final UserData _userData;
   String _chatId;
@@ -16,7 +44,6 @@ class Chat with ChangeNotifier {
     } else {
       _chatId = '$peerUid-$_uid';
     }
-    print(_chatId);
   }
 
   UserData get userData => _userData.copy();
