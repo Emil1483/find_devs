@@ -36,6 +36,7 @@ class _ChatRouteState extends State<ChatRoute> {
                 MessageData.fromMap(
                   dokuments[index].data,
                 ),
+                chat.uid,
               ),
             );
           }

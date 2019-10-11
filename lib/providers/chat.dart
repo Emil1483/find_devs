@@ -47,6 +47,7 @@ class Chat with ChangeNotifier {
   }
 
   UserData get userData => _userData.copy();
+  String get uid => _uid;
 
   Stream<QuerySnapshot> get stream => Firestore.instance
       .collection("messages")
