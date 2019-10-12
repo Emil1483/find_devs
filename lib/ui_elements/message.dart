@@ -24,7 +24,9 @@ class Message extends StatelessWidget {
       return Padding(
         padding: EdgeInsets.only(right: 14.0),
         child: CircleAvatar(
-          backgroundImage: NetworkImage(otherUserData.imageUrl),
+          backgroundImage: NetworkImage(
+            otherUserData.imageUrl,
+          ),
         ),
       );
     }
