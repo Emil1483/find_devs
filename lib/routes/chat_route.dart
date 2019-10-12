@@ -33,10 +33,11 @@ class _ChatRouteState extends State<ChatRoute> {
               itemCount: snapshot.data.documents.length,
               reverse: true,
               itemBuilder: (context, index) => Message(
-                MessageData.fromMap(
+                messageData: MessageData.fromMap(
                   dokuments[index].data,
                 ),
-                chat.uid,
+                selfUid: chat.uid,
+                otherUserData: chat.userData,
               ),
             );
           }
