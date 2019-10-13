@@ -5,46 +5,46 @@ import '../providers/user.dart';
 import './chat_route.dart';
 import '../ui_elements/gradient button.dart';
 
-Widget _buildButton(
-  BuildContext context, {
-  String text,
-  IconData icon,
-  Function onTap,
-}) {
-  return GradientButton(
-    onPressed: onTap,
-    gradient: LinearGradient(
-      colors: [
-        Theme.of(context).accentColor,
-        Theme.of(context).indicatorColor,
-      ],
-      begin: FractionalOffset.centerLeft,
-      end: FractionalOffset.centerRight,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Icon(icon, color: Theme.of(context).canvasColor),
-        SizedBox(width: 6.0),
-        Text(
-          text,
-          style: TextStyle(
-            color: Theme.of(context).canvasColor,
-            fontWeight: FontWeight.w700,
-            fontSize: 14.0,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 class DevDetailsRoute extends StatelessWidget {
   final UserData userData;
 
   DevDetailsRoute({@required this.userData});
 
-  Widget _buildImage() {
+  Widget _buildButton(
+    BuildContext context, {
+    String text,
+    IconData icon,
+    Function onTap,
+  }) {
+    return GradientButton(
+      onPressed: onTap,
+      gradient: LinearGradient(
+        colors: [
+          Theme.of(context).accentColor,
+          Theme.of(context).indicatorColor,
+        ],
+        begin: FractionalOffset.centerLeft,
+        end: FractionalOffset.centerRight,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, color: Theme.of(context).canvasColor),
+          SizedBox(width: 6.0),
+          Text(
+            text,
+            style: TextStyle(
+              color: Theme.of(context).canvasColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 14.0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static Widget _buildImage(UserData userData) {
     return userData.imageUrl == null || userData.imageUrl.isEmpty
         ? Center(
             child: Container(
@@ -65,12 +65,12 @@ class DevDetailsRoute extends StatelessWidget {
           );
   }
 
-  Widget _buildTop(BuildContext context) {
+  static Widget _buildTop(BuildContext context, UserData userData) {
     bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
     if (portrait) {
       return Column(
         children: <Widget>[
-          _buildImage(),
+          _buildImage(userData),
           SizedBox(height: 24.0),
           Text(userData.about, textAlign: TextAlign.center),
         ],
@@ -79,7 +79,7 @@ class DevDetailsRoute extends StatelessWidget {
       return Row(
         children: <Widget>[
           Expanded(
-            child: _buildImage(),
+            child: _buildImage(userData),
           ),
           Expanded(
             child: Text(userData.about),
@@ -89,8 +89,12 @@ class DevDetailsRoute extends StatelessWidget {
     }
   }
 
-  Widget _buildCheck(BuildContext context,
-      {bool checked, IconData icon, String text}) {
+  static Widget _buildCheck(
+    BuildContext context, {
+    @required bool checked,
+    @required IconData icon,
+    @required String text,
+  }) {
     TextTheme theme = Theme.of(context).textTheme;
 
     Widget buildIcon() {
@@ -131,7 +135,10 @@ class DevDetailsRoute extends StatelessWidget {
     }
   }
 
-  Widget _buildChecks(BuildContext context) {
+  static Widget _buildChecks({
+    @required BuildContext context,
+    @required UserData userData,
+  }) {
     List<Widget> children = [
       _buildCheck(
         context,
@@ -164,9 +171,31 @@ class DevDetailsRoute extends StatelessWidget {
     }
   }
 
+  static Widget buildMain({
+    @required BuildContext context,
+    @required UserData userData,
+  }) {
+    TextTheme theme = Theme.of(context).textTheme;
+    return Column(
+      children: <Widget>[
+        _buildTop(context, userData),
+        SizedBox(height: 24.0),
+        Text(
+          "City/state - ${userData.city}",
+          textAlign: TextAlign.center,
+          style: theme.subhead,
+        ),
+        SizedBox(height: 12.0),
+        _buildChecks(
+          context: context,
+          userData: userData,
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextTheme theme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         title: Text(userData.username),
@@ -174,15 +203,10 @@ class DevDetailsRoute extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
         children: <Widget>[
-          _buildTop(context),
-          SizedBox(height: 24.0),
-          Text(
-            "City/state - ${userData.city}",
-            textAlign: TextAlign.center,
-            style: theme.subhead,
+          buildMain(
+            context: context,
+            userData: userData,
           ),
-          SizedBox(height: 12.0),
-          _buildChecks(context),
           SizedBox(height: 32.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
