@@ -16,38 +16,37 @@ class Message extends StatelessWidget {
   });
 
   void _showDialog(BuildContext context) {
-    Navigator.push(
-      context,
-      HeroDialogRoute(
-        builder: (BuildContext context) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                vertical: 60,
-                horizontal: 40,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: SingleChildScrollView(
-                  child: Material(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 20.0,
-                        vertical: 18.0,
-                      ),
-                      child: DevDetailsRoute.buildMain(
-                        context: context,
-                        userData: otherUserData,
-                      ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              vertical: 60,
+              horizontal: 40,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: SingleChildScrollView(
+                child: Material(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 18.0,
+                    ),
+                    child: DevDetailsRoute.buildMain(
+                      context: context,
+                      userData: otherUserData,
                     ),
                   ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
+  
   }
 
   Widget _buildIcon() {
@@ -59,12 +58,9 @@ class Message extends StatelessWidget {
     } else {
       return Padding(
         padding: EdgeInsets.only(right: 14.0),
-        child: Hero(
-          tag: otherUserData,
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(
-              otherUserData.imageUrl,
-            ),
+        child: CircleAvatar(
+          backgroundImage: NetworkImage(
+            otherUserData.imageUrl,
           ),
         ),
       );
@@ -111,43 +107,5 @@ class Message extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class HeroDialogRoute<T> extends PageRoute<T> {
-  HeroDialogRoute({this.builder}) : super();
-
-  final WidgetBuilder builder;
-
-  @override
-  bool get opaque => false;
-
-  @override
-  bool get barrierDismissible => true;
-
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 300);
-
-  @override
-  bool get maintainState => true;
-
-  @override
-  Color get barrierColor => Colors.black54;
-
-  @override
-  String get barrierLabel => null;
-
-  @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
-    return new FadeTransition(
-        opacity: new CurvedAnimation(parent: animation, curve: Curves.easeOut),
-        child: child);
-  }
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
-    return builder(context);
   }
 }
