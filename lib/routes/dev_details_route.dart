@@ -10,40 +10,6 @@ class DevDetailsRoute extends StatelessWidget {
 
   DevDetailsRoute({@required this.userData});
 
-  Widget _buildButton(
-    BuildContext context, {
-    String text,
-    IconData icon,
-    Function onTap,
-  }) {
-    return GradientButton(
-      onPressed: onTap,
-      gradient: LinearGradient(
-        colors: [
-          Theme.of(context).accentColor,
-          Theme.of(context).indicatorColor,
-        ],
-        begin: FractionalOffset.centerLeft,
-        end: FractionalOffset.centerRight,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, color: Theme.of(context).canvasColor),
-          SizedBox(width: 6.0),
-          Text(
-            text,
-            style: TextStyle(
-              color: Theme.of(context).canvasColor,
-              fontWeight: FontWeight.w700,
-              fontSize: 14.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   static Widget _buildImage(UserData userData) {
     return userData.imageUrl == null || userData.imageUrl.isEmpty
         ? Center(
@@ -200,42 +166,21 @@ class DevDetailsRoute extends StatelessWidget {
       appBar: AppBar(
         title: Text(userData.username),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.message),
+        onPressed: () {
+          Navigator.of(context).pushNamed(
+            ChatRoute.routeName,
+            arguments: userData,
+          );
+        },
+      ),
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
         children: <Widget>[
           buildMain(
             context: context,
             userData: userData,
-          ),
-          SizedBox(height: 32.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              if (userData.email != null)
-                _buildButton(
-                  context,
-                  icon: Icons.email,
-                  text: "Send Email",
-                  onTap: () async {
-                    final url = "mailto:${userData.email}";
-                    if (await canLaunch(url))
-                      await launch(url);
-                    else
-                      throw "Could not launch $url";
-                  },
-                ),
-              _buildButton(
-                context,
-                icon: Icons.message,
-                text: "Send Message",
-                onTap: () {
-                  Navigator.of(context).pushNamed(
-                    ChatRoute.routeName,
-                    arguments: userData,
-                  );
-                },
-              ),
-            ],
           ),
         ],
       ),
