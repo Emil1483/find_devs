@@ -101,42 +101,6 @@ class Message extends StatelessWidget {
     }
   }
 
-  Widget _buildMain(BuildContext context, {bool sentBySelf}) {
-    return Row(
-      mainAxisAlignment:
-          sentBySelf ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: <Widget>[
-        if (!sentBySelf)
-          GestureDetector(
-            child: _buildIcon(),
-            onTap: () => _showDialog(context),
-          ),
-        Container(
-          constraints: BoxConstraints.loose(
-            Size(
-              MediaQuery.of(context).size.width * 0.7,
-              double.infinity,
-            ),
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18.0),
-            color: sentBySelf
-                ? Theme.of(context).accentColor
-                : Theme.of(context).cardColor,
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 10.0),
-          child: Text(
-            messageData.content,
-            style: TextStyle(
-              color: sentBySelf ? Theme.of(context).canvasColor : Colors.white,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final bool sentBySelf = messageData.from == selfUid;

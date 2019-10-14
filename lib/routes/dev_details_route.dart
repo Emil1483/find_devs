@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/user.dart';
 import './chat_route.dart';
-import '../ui_elements/gradient button.dart';
 
 class DevDetailsRoute extends StatelessWidget {
   final UserData userData;
