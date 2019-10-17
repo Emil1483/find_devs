@@ -36,6 +36,8 @@ class Chat with ChangeNotifier {
   String _chatId;
   String _uid;
 
+  final Firestore _db = Firestore.instance;
+
   Chat(this._userData, String uid) {
     _uid = uid;
     final String peerUid = _userData.uid;
@@ -44,10 +46,28 @@ class Chat with ChangeNotifier {
     } else {
       _chatId = '$peerUid-$_uid';
     }
+    _addToFriends();
   }
 
   UserData get userData => _userData.copy();
   String get uid => _uid;
+
+  void _addToFriends() async {
+    DocumentReference selfRef = _db
+        .collection("users")
+        .document(_uid)
+        .collection("info")
+        .document("friends");
+
+    DocumentReference friendRef = _db
+        .collection("users")
+        .document(_userData.uid)
+        .collection("info")
+        .document("friends");
+
+    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true);
+    await friendRef.setData({_uid: false}, merge: true);
+  }
 
   Stream<QuerySnapshot> get stream => Firestore.instance
       .collection("messages")

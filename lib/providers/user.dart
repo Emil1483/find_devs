@@ -257,7 +257,7 @@ class User with ChangeNotifier {
           .collection("info")
           .document("private");
       DocumentSnapshot snap = await ref.get();
-      if (!snap.exists || snap.data["geoHash"] == null) return null;
+      if (!snap.exists) return null;
       return snap.data["geoHash"];
     } catch (e) {
       print(e);
