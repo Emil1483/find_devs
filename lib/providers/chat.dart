@@ -65,7 +65,7 @@ class Chat with ChangeNotifier {
         .collection("info")
         .document("friends");
 
-    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true);
+    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true); //TODO: Pass the frienddata extends userdata instead. Pass to friend as well.
     await friendRef.setData({_uid: false}, merge: true);
   }
 
