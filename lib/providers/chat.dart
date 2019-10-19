@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
-import './user.dart' show UserData;
+import './user.dart';
 
 class MessageData {
   final String from;
@@ -38,21 +39,22 @@ class Chat with ChangeNotifier {
 
   final Firestore _db = Firestore.instance;
 
-  Chat(this._userData, String uid) {
-    _uid = uid;
+  Chat(this._userData, BuildContext context) {
+    User user = Provider.of<User>(context, listen: false);
+    _uid = user.user.uid;
     final String peerUid = _userData.uid;
     if (_uid.hashCode <= peerUid.hashCode) {
       _chatId = '$_uid-$peerUid';
     } else {
       _chatId = '$peerUid-$_uid';
     }
-    _addToFriends();
+    _addToFriends(user);
   }
 
   UserData get userData => _userData.copy();
   String get uid => _uid;
 
-  void _addToFriends() async {
+  void _addToFriends(User user) async {
     DocumentReference selfRef = _db
         .collection("users")
         .document(_uid)
@@ -65,8 +67,11 @@ class Chat with ChangeNotifier {
         .collection("info")
         .document("friends");
 
-    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true); //TODO: Pass the frienddata extends userdata instead. Pass to friend as well.
-    await friendRef.setData({_uid: false}, merge: true);
+    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true);
+
+    UserData myUserData = await user.getPublicUserData();
+
+    friendRef.setData({_uid: myUserData.toMap()}, merge: true);
   }
 
   Stream<QuerySnapshot> get stream => Firestore.instance

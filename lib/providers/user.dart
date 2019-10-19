@@ -358,10 +358,26 @@ class User with ChangeNotifier {
     }
   }
 
+  Future<UserData> getPublicUserData() async {
+    if (await _noInternet()) return null;
+    try {
+      final CollectionReference ref =
+          _db.collection("users").document(_user.uid).collection("info");
+
+      final data = await ref.document("public").get();
+      return UserData.fromMap(data.exists ? data.data : {});
+    } catch (e) {
+      print("could not get user data: $e");
+      return null;
+    }
+  }
+
   Future<UserData> getUserData() async {
     if (await _noInternet()) return null;
+
     DocumentSnapshot public;
     DocumentSnapshot private;
+
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
@@ -380,15 +396,14 @@ class User with ChangeNotifier {
 
     String city = await _getCity();
 
-    UserData userData = UserData.fromMap(
+    return UserData.fromMap(
       data,
       email: _user.email,
       username: _user.displayName,
-      city: city,
       imageUrl: _user.photoUrl,
+      uid: _user.uid,
+      city: city,
     );
-
-    return userData;
   }
 
   AuthError _getErrorType(PlatformException e) {
