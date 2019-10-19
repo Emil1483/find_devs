@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
 import '../providers/chat.dart';
+import '../ui_elements/friend_tile.dart';
 
 class MessagesRoute extends StatefulWidget {
   static const String routeName = "/messages";
@@ -34,8 +35,8 @@ class _MessagesRouteState extends State<MessagesRoute> {
     } else {
       return ListView.builder(
         itemCount: _friends.length,
-        itemBuilder: (BuildContext context, int index) => Container(
-          child: Text(_friends[index].userData.username),
+        itemBuilder: (BuildContext context, int index) => FriendTile(
+          friend: _friends[index],
         ),
       );
     }
