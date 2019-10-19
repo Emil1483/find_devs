@@ -8,6 +8,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../helpers/geohash_helper.dart';
+import './chat.dart' show Friend;
 
 enum AuthError {
   UserNotFound,
@@ -406,7 +407,7 @@ class User with ChangeNotifier {
     );
   }
 
-  Future<List<UserData>> getFriends() async {
+  Future<List<Friend>> getFriends() async {
     final data = await _db
         .collection("users")
         .document(_user.uid)
@@ -415,10 +416,10 @@ class User with ChangeNotifier {
         .get();
 
     if (!data.exists) return null;
-    List<UserData> result = [];
+    List<Friend> result = [];
     data.data.forEach((String key, dynamic val) {
       final friendData = Map<String, dynamic>.from(val);
-      result.add(UserData.fromMap(friendData));
+      result.add(Friend.fromMap(friendData));
     });
     return result;
   }

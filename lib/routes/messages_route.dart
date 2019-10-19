@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
+import '../providers/chat.dart';
 
 class MessagesRoute extends StatefulWidget {
   static const String routeName = "/messages";
@@ -12,7 +13,7 @@ class MessagesRoute extends StatefulWidget {
 
 class _MessagesRouteState extends State<MessagesRoute> {
   bool _loading = true;
-  List<UserData> _friends;
+  List<Friend> _friends;
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _MessagesRouteState extends State<MessagesRoute> {
       return ListView.builder(
         itemCount: _friends.length,
         itemBuilder: (BuildContext context, int index) => Container(
-          child: Text(_friends[index].username),
+          child: Text(_friends[index].userData.username),
         ),
       );
     }

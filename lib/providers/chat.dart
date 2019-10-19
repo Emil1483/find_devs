@@ -32,15 +32,48 @@ class MessageData {
   }
 }
 
+class Friend {
+  final UserData userData;
+  final bool seen;
+  final MessageData latestMessage;
+
+  Friend({
+    @required this.userData,
+    @required this.seen,
+    @required this.latestMessage,
+  });
+
+  factory Friend.fromMap(Map<String, dynamic> map) {
+    return Friend(
+      userData: UserData.fromMap(
+        Map<String, dynamic>.from(map["userData"]),
+      ),
+      seen: map["seen"],
+      latestMessage: MessageData.fromMap(
+        Map<String, dynamic>.from(map["latestMessage"]),
+      ),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "userData": userData.toMap(),
+      "seen": seen,
+      "latestMessage": latestMessage.toMap(),
+    };
+  }
+}
+
 class Chat with ChangeNotifier {
   final UserData _userData;
+  final BuildContext _context;
   String _chatId;
   String _uid;
 
   final Firestore _db = Firestore.instance;
 
-  Chat(this._userData, BuildContext context) {
-    User user = Provider.of<User>(context, listen: false);
+  Chat(this._userData, this._context) {
+    User user = Provider.of<User>(_context, listen: false);
     _uid = user.user.uid;
     final String peerUid = _userData.uid;
     if (_uid.hashCode <= peerUid.hashCode) {
@@ -48,13 +81,13 @@ class Chat with ChangeNotifier {
     } else {
       _chatId = '$peerUid-$_uid';
     }
-    _addToFriends(user);
+    //_addToFriends();
   }
 
   UserData get userData => _userData.copy();
   String get uid => _uid;
 
-  void _addToFriends(User user) async {
+  void _addToFriends(MessageData messageData) async {
     DocumentReference selfRef = _db
         .collection("users")
         .document(_uid)
@@ -67,11 +100,26 @@ class Chat with ChangeNotifier {
         .collection("info")
         .document("friends");
 
-    await selfRef.setData({_userData.uid: _userData.toMap()}, merge: true);
-
+    User user = Provider.of<User>(_context, listen: false);
     UserData myUserData = await user.getPublicUserData();
 
-    friendRef.setData({_uid: myUserData.toMap()}, merge: true);
+    Friend me = Friend(
+      latestMessage: messageData,
+      seen: false,
+      userData: myUserData,
+    );
+
+    Friend other = Friend(
+      userData: _userData,
+      latestMessage: messageData,
+      seen: false,
+    );
+
+    print(other.toMap());
+
+    await selfRef.setData({_userData.uid: other.toMap()}, merge: true);
+
+    await friendRef.setData({_uid: me.toMap()}, merge: true);
   }
 
   Stream<QuerySnapshot> get stream => Firestore.instance
@@ -88,12 +136,19 @@ class Chat with ChangeNotifier {
         .document(_chatId)
         .collection(_chatId)
         .document(DateTime.now().millisecondsSinceEpoch.toString());
+
+    MessageData messageData = MessageData(
+      from: _uid,
+      timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+      content: content,
+    );
+    _addToFriends(messageData);
+
     Firestore.instance.runTransaction((Transaction transaction) async {
-      await transaction.set(ref, {
-        "from": _uid,
-        "timestamp": DateTime.now().millisecondsSinceEpoch.toString(),
-        "content": content,
-      });
+      await transaction.set(
+        ref,
+        messageData.toMap(),
+      );
     });
   }
 }
