@@ -9,6 +9,7 @@ class FriendTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //TODO: complete friend tile
     return Container(
       child: Text("friend: ${friend.userData.username}"),
     );
