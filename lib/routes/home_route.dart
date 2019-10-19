@@ -6,6 +6,7 @@ import '../ui_elements/main_drawer.dart';
 import '../ui_elements/user_tile.dart';
 import '../providers/devs.dart';
 import '../providers/user.dart';
+import './messages_route.dart';
 
 class HomeRoute extends StatelessWidget {
   static const String routeName = "/home";
@@ -29,7 +30,9 @@ class HomeRoute extends StatelessWidget {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.chat),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(MessagesRoute.routeName);
+            },
           ),
         ],
       ),

@@ -46,6 +46,7 @@ class MainDrawer extends StatelessWidget {
                 height: 144.0,
               ),
             ),
+            /*
             _buildListTile(
               context,
               onTap: () {
@@ -61,6 +62,7 @@ class MainDrawer extends StatelessWidget {
               subtitle: home ?  "Contract or collaboration" : null,
               icon: home ?  Icon(Icons.code) : Icon(Icons.person),
             ),
+            */
             _buildListTile(
               context,
               onTap: () {

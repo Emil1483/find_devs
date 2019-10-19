@@ -406,6 +406,23 @@ class User with ChangeNotifier {
     );
   }
 
+  Future<List<UserData>> getFriends() async {
+    final data = await _db
+        .collection("users")
+        .document(_user.uid)
+        .collection("info")
+        .document("friends")
+        .get();
+
+    if (!data.exists) return null;
+    List<UserData> result = [];
+    data.data.forEach((String key, dynamic val) {
+      final friendData = Map<String, dynamic>.from(val);
+      result.add(UserData.fromMap(friendData));
+    });
+    return result;
+  }
+
   AuthError _getErrorType(PlatformException e) {
     //TODO: Make sure this works for iOS!
     switch (e.code) {
