@@ -23,7 +23,7 @@ class _MessagesRouteState extends State<MessagesRoute> {
   }
 
   void _init() async {
-    _friends = await Provider.of<User>(context, listen: false).getFriends();
+    _friends = await Provider.of<User>(context, listen: false).getFriends(); //TODO: Turn this into a stream
     setState(() => _loading = false);
   }
 
