@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../providers/chat.dart' show MessageData;
 import '../providers/user.dart' show UserData;
 import '../routes/dev_details_route.dart';
+import '../helpers/date_formatter.dart';
 
 class Message extends StatelessWidget {
   final MessageData messageData;
@@ -14,41 +15,6 @@ class Message extends StatelessWidget {
     @required this.selfUid,
     @required this.otherUserData,
   });
-
-  String _format(DateTime dateTime) {
-    return "${dateTime.day}. ${_monthFromInt(dateTime.month)} ${dateTime.year.toString().substring(2)}";
-  }
-
-  String _monthFromInt(int index) {
-    assert(index >= 0 && index <= 12);
-    switch (index) {
-      case 1:
-        return "Jan";
-      case 2:
-        return "Feb";
-      case 3:
-        return "Mar";
-      case 4:
-        return "Apr";
-      case 5:
-        return "May";
-      case 6:
-        return "Jun";
-      case 7:
-        return "Jul";
-      case 8:
-        return "Aug";
-      case 9:
-        return "Sept";
-      case 10:
-        return "Oct";
-      case 11:
-        return "Nov";
-      case 12:
-        return "Dec";
-    }
-    return "";
-  }
 
   void _showDialog(BuildContext context) {
     showDialog(
@@ -135,11 +101,7 @@ class Message extends StatelessWidget {
       ),
       SizedBox(width: 12.0),
       Text(
-        _format(
-          DateTime.fromMillisecondsSinceEpoch(
-            int.parse(messageData.timestamp),
-          ),
-        ),
+        formatFromString(messageData.timestamp),
         style: TextStyle(fontSize: 12.0),
       ),
     ];
