@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 
 import './user.dart';
 
@@ -73,7 +72,6 @@ class Chat with ChangeNotifier {
   final Firestore _db = Firestore.instance;
 
   Chat(this._userData, this._user) {
-  
     _uid = _user.user.uid;
     final String peerUid = _userData.uid;
     if (_uid.hashCode <= peerUid.hashCode) {
@@ -105,13 +103,12 @@ class Chat with ChangeNotifier {
 
     UserData myUserData = await _user.getPublicUserData();
 
-    DocumentReference ref = _db
+    await _db
         .collection("users")
         .document(_uid)
         .collection("info")
-        .document("friends");
-
-    await ref.updateData({
+        .document("friends")
+        .updateData({
       _userData.uid: Friend(
         latestMessage: latestMessage,
         seen: true,
@@ -119,13 +116,12 @@ class Chat with ChangeNotifier {
       ).toMap(),
     });
 
-    ref = _db
+    await _db
         .collection("users")
         .document(_userData.uid)
         .collection("info")
-        .document("friends");
-
-    await ref.updateData({
+        .document("friends")
+        .updateData({
       _uid: Friend(
         latestMessage: latestMessage,
         seen: true,
