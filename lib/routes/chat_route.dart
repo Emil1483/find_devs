@@ -42,7 +42,7 @@ class _ChatRouteState extends State<ChatRoute> {
                 } else {
                   final dokuments = snapshot.data.documents;
                   return ListView.builder(
-                    itemCount: snapshot.data.documents.length,
+                    itemCount: dokuments.length,
                     reverse: true,
                     itemBuilder: (context, index) => Message(
                       messageData: MessageData.fromMap(

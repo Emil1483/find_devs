@@ -269,6 +269,8 @@ class User with ChangeNotifier {
   Future<bool> updateUserData(UserData data) async {
     if (await _noInternet()) return false;
 
+    data.uid = _user.uid;
+
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
 
@@ -415,7 +417,8 @@ class User with ChangeNotifier {
         .document("friends")
         .get();
 
-    if (!data.exists) return null;
+    if (!data.exists) return [];
+
     List<Friend> result = [];
     data.data.forEach((String key, dynamic val) {
       final friendData = Map<String, dynamic>.from(val);

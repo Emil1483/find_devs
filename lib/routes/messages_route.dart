@@ -32,6 +32,23 @@ class _MessagesRouteState extends State<MessagesRoute> {
       return Center(
         child: CircularProgressIndicator(),
       );
+    } else if (_friends.length == 0) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 64.0),
+              child: Image.asset("assets/missing_asset.png"),
+            ),
+            SizedBox(height: 32.0),
+            Text(
+              "you have no friends",
+              style: Theme.of(context).textTheme.title,
+            ),
+          ],
+        ),
+      );
     } else {
       return ListView.builder(
         itemCount: _friends.length,

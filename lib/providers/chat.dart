@@ -66,26 +66,73 @@ class Friend {
 
 class Chat with ChangeNotifier {
   final UserData _userData;
-  final BuildContext _context;
+  final User _user;
   String _chatId;
   String _uid;
 
   final Firestore _db = Firestore.instance;
 
-  Chat(this._userData, this._context) {
-    User user = Provider.of<User>(_context, listen: false);
-    _uid = user.user.uid;
+  Chat(this._userData, this._user) {
+  
+    _uid = _user.user.uid;
     final String peerUid = _userData.uid;
     if (_uid.hashCode <= peerUid.hashCode) {
       _chatId = '$_uid-$peerUid';
     } else {
       _chatId = '$peerUid-$_uid';
     }
-    //_addToFriends();
+    _updateSeen();
   }
 
   UserData get userData => _userData.copy();
   String get uid => _uid;
+
+  Future<MessageData> _getLatestMessage() async {
+    QuerySnapshot snap = await Firestore.instance
+        .collection("messages")
+        .document(_chatId)
+        .collection(_chatId)
+        .orderBy("timestamp", descending: true)
+        .limit(1)
+        .getDocuments();
+
+    return MessageData.fromMap(snap.documents.first.data);
+  }
+
+  void _updateSeen() async {
+    MessageData latestMessage = await _getLatestMessage();
+    if (latestMessage.from == _uid) return;
+
+    UserData myUserData = await _user.getPublicUserData();
+
+    DocumentReference ref = _db
+        .collection("users")
+        .document(_uid)
+        .collection("info")
+        .document("friends");
+
+    await ref.updateData({
+      _userData.uid: Friend(
+        latestMessage: latestMessage,
+        seen: true,
+        userData: _userData,
+      ).toMap(),
+    });
+
+    ref = _db
+        .collection("users")
+        .document(_userData.uid)
+        .collection("info")
+        .document("friends");
+
+    await ref.updateData({
+      _uid: Friend(
+        latestMessage: latestMessage,
+        seen: true,
+        userData: myUserData,
+      ).toMap(),
+    });
+  }
 
   void _addToFriends(MessageData messageData) async {
     DocumentReference selfRef = _db
@@ -100,8 +147,7 @@ class Chat with ChangeNotifier {
         .collection("info")
         .document("friends");
 
-    User user = Provider.of<User>(_context, listen: false);
-    UserData myUserData = await user.getPublicUserData();
+    UserData myUserData = await _user.getPublicUserData();
 
     Friend me = Friend(
       latestMessage: messageData,
@@ -115,8 +161,6 @@ class Chat with ChangeNotifier {
       seen: false,
     );
 
-    print(other.toMap());
-
     await selfRef.setData({_userData.uid: other.toMap()}, merge: true);
 
     await friendRef.setData({_uid: me.toMap()}, merge: true);
@@ -127,7 +171,7 @@ class Chat with ChangeNotifier {
       .document(_chatId)
       .collection(_chatId)
       .orderBy("timestamp", descending: true)
-      .limit(20)
+      .limit(100)
       .snapshots();
 
   void sendMessage(String content) {

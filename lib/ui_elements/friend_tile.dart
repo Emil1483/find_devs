@@ -99,7 +99,9 @@ class FriendTile extends StatelessWidget {
                               style: TextStyle(
                                 fontWeight:
                                     _shouldBeBold() ? FontWeight.bold : null,
-                                color: Colors.grey,
+                                color: _shouldBeBold()
+                                    ? Colors.white
+                                    : Colors.grey,
                               ),
                             ),
                           ),
@@ -123,7 +125,9 @@ class FriendTile extends StatelessWidget {
             ),
           ),
         ),
-        Divider(height: 0,),
+        Divider(
+          height: 0,
+        ),
       ],
     );
   }

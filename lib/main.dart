@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
             UserData userData = ModalRoute.of(context).settings.arguments;
 
             return ChangeNotifierProvider<Chat>.value(
-              value: Chat(userData, context),
+              value: Chat(userData, Provider.of<User>(context, listen: false)),
               child: ChatRoute(),
             );
           },
