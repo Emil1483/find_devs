@@ -62,7 +62,7 @@ class FriendTile extends StatelessWidget {
             );
           },
           child: Container(
-            margin: EdgeInsets.symmetric(vertical: 4.0),
+            margin: EdgeInsets.symmetric(vertical: 6.0),
             height: 64,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
