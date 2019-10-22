@@ -409,22 +409,19 @@ class User with ChangeNotifier {
     );
   }
 
-  Future<List<Friend>> getFriends() async {
-    final data = await _db
-        .collection("users")
-        .document(_user.uid)
-        .collection("info")
-        .document("friends")
-        .get();
+  Stream<DocumentSnapshot> get friendsStream => _db
+      .collection("users")
+      .document(_user.uid)
+      .collection("info")
+      .document("friends")
+      .snapshots();
 
-    if (!data.exists) return [];
-
-    List<Friend> result = [];
-    data.data.forEach((String key, dynamic val) {
-      final friendData = Map<String, dynamic>.from(val);
-      result.add(Friend.fromMap(friendData));
+  List<Friend> friendList(DocumentSnapshot data) {
+    List<Friend> friends = [];
+    data.data.forEach((String key, dynamic value) {
+      friends.add(Friend.fromMap(Map<String, dynamic>.from(value)));
     });
-    return result;
+    return friends;
   }
 
   AuthError _getErrorType(PlatformException e) {
