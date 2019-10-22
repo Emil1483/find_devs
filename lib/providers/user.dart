@@ -427,7 +427,7 @@ class User with ChangeNotifier {
   int notificationCount(List<Friend> friends) {
     int count = 0;
     friends.forEach((Friend f) {
-      if (!f.seen) count++;
+      if (!f.seen && f.latestMessage.from == f.userData.uid) count++;
     });
     return count;
   }
