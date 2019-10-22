@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:badges/badges.dart';
 
 import '../ui_elements/main_drawer.dart';
 import '../ui_elements/user_tile.dart';
@@ -23,13 +24,37 @@ class HomeRoute extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Devs devs = Provider.of<Devs>(context);
+    User user = Provider.of<User>(context, listen: false);
     bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Scaffold(
       appBar: AppBar(
         title: Text("Find Developers"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.chat),
+            icon: StreamBuilder(
+              stream: user.friendsStream,
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
+                if (!snap.hasData) return Icon(Icons.chat);
+
+                int notifications = user.notificationCount(
+                  user.friendList(snap.data),
+                );
+
+                return Badge(
+                  badgeContent: Text(
+                    notifications.toString(),
+                    style: TextStyle(
+                      color: Theme.of(context).canvasColor,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  shape: BadgeShape.circle,
+                  badgeColor: Theme.of(context).accentColor,
+                  showBadge: notifications > 0,
+                  child: Icon(Icons.chat),
+                );
+              },
+            ),
             onPressed: () {
               Navigator.of(context).pushNamed(MessagesRoute.routeName);
             },

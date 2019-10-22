@@ -411,7 +411,7 @@ class User with ChangeNotifier {
 
   Stream<DocumentSnapshot> get friendsStream => _db
       .collection("users")
-      .document(_user.uid)
+      .document("XahU4GX7BMNnVtt7vqmufogEGgm1") //.document(_user.uid)
       .collection("info")
       .document("friends")
       .snapshots();
@@ -422,6 +422,14 @@ class User with ChangeNotifier {
       friends.add(Friend.fromMap(Map<String, dynamic>.from(value)));
     });
     return friends;
+  }
+
+  int notificationCount(List<Friend> friends) {
+    int count = 0;
+    friends.forEach((Friend f) {
+      if (!f.seen) count++;
+    });
+    return count;
   }
 
   AuthError _getErrorType(PlatformException e) {
