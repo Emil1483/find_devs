@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../helpers/geohash_helper.dart';
 import './chat.dart' show Friend;
@@ -114,6 +115,7 @@ String getErrorMessage(AuthError error) {
 
 class User with ChangeNotifier {
   FirebaseUser _user;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   final GoogleSignIn _google = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final Firestore _db = Firestore.instance;
@@ -134,6 +136,35 @@ class User with ChangeNotifier {
     if (user != null) _user = user;
     _waiting = false;
     notifyListeners();
+    _registerNotification();
+  }
+
+  void _registerNotification() async {
+    _firebaseMessaging.requestNotificationPermissions();
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print('onMessage: $message');
+        //showNotification(message['notification']);
+        return;
+      },
+      onResume: (Map<String, dynamic> message) {
+        print('onResume: $message');
+        return;
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print('onLaunch: $message');
+        return;
+      },
+    );
+
+    String token = await _firebaseMessaging.getToken();
+    await _db
+        .collection("users")
+        .document(_user.uid)
+        .collection("info")
+        .document("public")
+        .updateData({"pushToken": token});
   }
 
   Future<AuthError> signUp({
