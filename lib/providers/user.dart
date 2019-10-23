@@ -143,17 +143,13 @@ class User with ChangeNotifier {
   Future<void> _registerNotification() async {
     _firebaseMessaging.requestNotificationPermissions();
 
-    try {
-      String token = await _firebaseMessaging.getToken();
-      await _db
-          .collection("users")
-          .document(_user.uid)
-          .collection("info")
-          .document("public")
-          .updateData({"pushToken": token});
-    } catch (e) {
-      print("could not get token: $e");
-    }
+    String token = await _firebaseMessaging.getToken();
+    await _db
+        .collection("users")
+        .document(_user.uid)
+        .collection("info")
+        .document("public")
+        .updateData({"pushToken": token});
   }
 
   Future<AuthError> signUp({
@@ -327,7 +323,7 @@ class User with ChangeNotifier {
       await _registerNotification();
       return true;
     } catch (e) {
-      print("updateUserData: $e");
+      print("updateUserData failed: $e");
       return false;
     }
   }
