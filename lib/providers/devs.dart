@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../helpers/geohash_helper.dart';
 import './user.dart';
@@ -40,7 +41,12 @@ class Devs with ChangeNotifier {
         .collection("info")
         .document("private")
         .get();
-    if (!snap.exists || snap.data["city"] == null) return;
+
+    if (!snap.exists || snap.data["city"] == null) {
+      Position pos = await Geolocator().getCurrentPosition();
+      _geohash = GeohashHelper(pos.latitude, pos.longitude);
+      return;
+    }
 
     var addresses =
         await Geocoder.local.findAddressesFromQuery(snap.data["city"]);
