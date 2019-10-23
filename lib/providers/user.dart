@@ -288,8 +288,14 @@ class User with ChangeNotifier {
     Map<String, dynamic> publicMap = data.toMap();
 
     void add(bool hide, String key, dynamic val) {
-      privateMap[key] = val;
-      if (hide) publicMap.remove(key);
+      
+      if (hide) {
+        publicMap.remove(key);
+        privateMap[key] = val;
+      } else {
+        publicMap[key] = val;
+        privateMap.remove(key);
+      }
     }
 
     add(data.hideEmail, "email", _user.email);
