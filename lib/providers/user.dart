@@ -11,7 +11,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../helpers/geohash_helper.dart';
 import './chat.dart' show Friend;
-import '../routes/messages_route.dart';
 
 enum AuthError {
   UserNotFound,
