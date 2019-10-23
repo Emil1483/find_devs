@@ -33,6 +33,7 @@ class UserData {
   String imageUrl;
   String geoHash;
   String uid;
+  String pushToken;
 
   UserData({
     @required this.lookForDevs,
@@ -47,6 +48,7 @@ class UserData {
     @required this.imageUrl,
     @required this.geoHash,
     @required this.uid,
+    @required this.pushToken,
   });
 
   @override
@@ -73,6 +75,7 @@ class UserData {
       imageUrl: map["imageUrl"] ?? imageUrl,
       geoHash: map["geoHash"] ?? null,
       uid: map["uid"] ?? uid,
+      pushToken: map["pushToken"] ?? null,
     );
   }
 
@@ -90,6 +93,7 @@ class UserData {
       "imageUrl": imageUrl,
       "geoHash": geoHash,
       "uid": uid,
+      "pushToken": pushToken,
     };
   }
 
@@ -139,16 +143,9 @@ class User with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _registerNotification() async {
+  Future<String> _registerNotification() async {
     _firebaseMessaging.requestNotificationPermissions();
-
-    String token = await _firebaseMessaging.getToken();
-    await _db
-        .collection("users")
-        .document(_user.uid)
-        .collection("info")
-        .document("public")
-        .updateData({"pushToken": token});
+    return await _firebaseMessaging.getToken();
   }
 
   Future<AuthError> signUp({
@@ -285,6 +282,7 @@ class User with ChangeNotifier {
     if (await _noInternet()) return false;
 
     data.uid = _user.uid;
+    data.pushToken = await _registerNotification();
 
     Map<String, dynamic> privateMap = {};
     Map<String, dynamic> publicMap = data.toMap();
@@ -319,7 +317,6 @@ class User with ChangeNotifier {
 
       await ref.document("public").setData(publicMap);
       await ref.document("private").setData(privateMap);
-      await _registerNotification();
       return true;
     } catch (e) {
       print("updateUserData failed: $e");
