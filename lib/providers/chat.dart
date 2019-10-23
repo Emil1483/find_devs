@@ -5,6 +5,7 @@ import './user.dart';
 
 class MessageData {
   final String from;
+  final String to;
   final String timestamp;
   final String content;
 
@@ -12,6 +13,7 @@ class MessageData {
     @required this.from,
     @required this.timestamp,
     @required this.content,
+    @required this.to,
   });
 
   factory MessageData.fromMap(Map<String, dynamic> map) {
@@ -19,6 +21,7 @@ class MessageData {
       content: map["content"] ?? null,
       from: map["from"] ?? null,
       timestamp: map["timestamp"] ?? null,
+      to: map["to"] ?? null,
     );
   }
 
@@ -27,6 +30,7 @@ class MessageData {
       "from": from,
       "timestamp": timestamp,
       "content": content,
+      "to": to,
     };
   }
 }
@@ -179,6 +183,7 @@ class Chat with ChangeNotifier {
 
     MessageData messageData = MessageData(
       from: _uid,
+      to: _userData.uid,
       timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
       content: content,
     );

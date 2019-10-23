@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../helpers/geohash_helper.dart';
 import './chat.dart' show Friend;
+import '../routes/messages_route.dart';
 
 enum AuthError {
   UserNotFound,
@@ -136,35 +138,22 @@ class User with ChangeNotifier {
     if (user != null) _user = user;
     _waiting = false;
     notifyListeners();
-    _registerNotification();
   }
 
-  void _registerNotification() async {
+  Future<void> _registerNotification() async {
     _firebaseMessaging.requestNotificationPermissions();
 
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print('onMessage: $message');
-        //showNotification(message['notification']);
-        return;
-      },
-      onResume: (Map<String, dynamic> message) {
-        print('onResume: $message');
-        return;
-      },
-      onLaunch: (Map<String, dynamic> message) {
-        print('onLaunch: $message');
-        return;
-      },
-    );
-
-    String token = await _firebaseMessaging.getToken();
-    await _db
-        .collection("users")
-        .document(_user.uid)
-        .collection("info")
-        .document("public")
-        .updateData({"pushToken": token});
+    try {
+      String token = await _firebaseMessaging.getToken();
+      await _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("public")
+          .updateData({"pushToken": token});
+    } catch (e) {
+      print("could not get token: $e");
+    }
   }
 
   Future<AuthError> signUp({
@@ -335,6 +324,7 @@ class User with ChangeNotifier {
 
       await ref.document("public").setData(publicMap);
       await ref.document("private").setData(privateMap);
+      await _registerNotification();
       return true;
     } catch (e) {
       print("updateUserData: $e");
