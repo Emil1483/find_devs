@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:badges/badges.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../ui_elements/main_drawer.dart';
 import '../ui_elements/user_tile.dart';
@@ -33,8 +34,11 @@ class HomeRoute extends StatelessWidget {
           IconButton(
             icon: StreamBuilder(
               stream: user.friendsStream,
-              builder: (BuildContext context, AsyncSnapshot<dynamic> snap) {
-                if (!snap.hasData) return Icon(Icons.chat);
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snap,
+              ) {
+                if (!snap.hasData || snap.data.data == null) return Icon(Icons.chat);
 
                 int notifications = user.notificationCount(
                   user.friendList(snap.data),
