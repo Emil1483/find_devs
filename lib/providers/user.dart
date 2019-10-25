@@ -17,6 +17,7 @@ enum AuthError {
   ExistingUser,
   PasswordNotValid,
   NetworkError,
+  SignInFailed,
   Unknown,
 }
 
@@ -111,11 +112,12 @@ String getErrorMessage(AuthError error) {
     case AuthError.PasswordNotValid:
       return "Wrong password.";
     case AuthError.UserNotFound:
-      return "Could not find your account";
-    case AuthError.Unknown:
+      return "Could not find your account.";
+    case AuthError.SignInFailed:
+      return "Could not sign in via Google. Please try creating an account instead.";
+    default:
       return "Please try again later.";
   }
-  return "";
 }
 
 class User with ChangeNotifier {
@@ -456,8 +458,10 @@ class User with ChangeNotifier {
         return AuthError.NetworkError;
       case "ERROR_EMAIL_ALREADY_IN_USE":
         return AuthError.ExistingUser;
+      case "SIGN_IN_FAILED":
+        return AuthError.SignInFailed;
       default:
-        print("IMPLEMENT ERRORCODE ${e.code}");
+        print("IMPLEMENT ERRORCODE \"${e.code}\"");
         return AuthError.Unknown;
     }
   }
