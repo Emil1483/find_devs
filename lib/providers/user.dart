@@ -217,11 +217,8 @@ class User with ChangeNotifier {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
 
-      final publicResult = await ref.document("public").get();
-      if (publicResult.exists) return true;
-
-      final privateResult = await ref.document("private").get();
-      if (privateResult.exists) return true;
+      final result = await ref.document("private").get();
+      if (result.exists) return true;
 
       return false;
     } catch (e) {
@@ -286,7 +283,7 @@ class User with ChangeNotifier {
       data.uid = _user.uid;
       data.pushToken = await _registerNotification();
 
-      Map<String, dynamic> privateMap = {};
+      Map<String, dynamic> privateMap = data.toMap();
       Map<String, dynamic> publicMap = data.toMap();
 
       void add(bool hide, String key, dynamic val) {
@@ -392,29 +389,24 @@ class User with ChangeNotifier {
   Future<UserData> getUserData() async {
     if (await _noInternet()) return null;
 
-    DocumentSnapshot public;
-    DocumentSnapshot private;
+    Map<String, dynamic> data;
 
     try {
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
 
-      public = await ref.document("public").get();
-      private = await ref.document("private").get();
+      DocumentSnapshot snap = await ref.document("private").get();
+      data = snap.data;
     } catch (e) {
       print("could not get user data: $e");
       return null;
     }
 
-    final Map<String, dynamic> data = _combine([
-      public.exists ? public.data : {},
-      private.exists ? private.data : {},
-    ]);
-
-    String city = await _getCity();
+    String city;
+    if (data == null || !data.containsKey("city")) city = await _getCity();
 
     return UserData.fromMap(
-      data,
+      data ?? {},
       email: _user.email,
       username: _user.displayName,
       imageUrl: _user.photoUrl,
