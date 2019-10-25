@@ -282,38 +282,37 @@ class User with ChangeNotifier {
 
   Future<bool> updateUserData(UserData data) async {
     if (await _noInternet()) return false;
-
-    data.uid = _user.uid;
-    data.pushToken = await _registerNotification();
-
-    Map<String, dynamic> privateMap = {};
-    Map<String, dynamic> publicMap = data.toMap();
-
-    void add(bool hide, String key, dynamic val) {
-      privateMap[key] = val;
-      if (hide) publicMap.remove(key);
-    }
-
-    add(data.hideEmail, "email", _user.email);
-    add(data.hideCity, "city", data.city);
-
-    var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
-    Coordinates coordinates = addresses.first.coordinates;
-    String geoHash = GeohashHelper.getHash(
-      coordinates.latitude,
-      coordinates.longitude,
-    );
-
-    add(true, "geoHash", geoHash);
-
-    String prevHash = await _getPrevGeoHash();
-
-    if (!await _removeFromPlaces(prevHash)) return false;
-    if (!data.hideCity) if (!await _addToPlaces(geoHash, publicMap)) {
-      return false;
-    }
-
     try {
+      data.uid = _user.uid;
+      data.pushToken = await _registerNotification();
+
+      Map<String, dynamic> privateMap = {};
+      Map<String, dynamic> publicMap = data.toMap();
+
+      void add(bool hide, String key, dynamic val) {
+        privateMap[key] = val;
+        if (hide) publicMap.remove(key);
+      }
+
+      add(data.hideEmail, "email", _user.email);
+      add(data.hideCity, "city", data.city);
+
+      var addresses = await Geocoder.local.findAddressesFromQuery(data.city);
+      Coordinates coordinates = addresses.first.coordinates;
+      String geoHash = GeohashHelper.getHash(
+        coordinates.latitude,
+        coordinates.longitude,
+      );
+
+      add(true, "geoHash", geoHash);
+
+      String prevHash = await _getPrevGeoHash();
+
+      if (!await _removeFromPlaces(prevHash)) return false;
+      if (!data.hideCity) if (!await _addToPlaces(geoHash, publicMap)) {
+        return false;
+      }
+
       final CollectionReference ref =
           _db.collection("users").document(_user.uid).collection("info");
 

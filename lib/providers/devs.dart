@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 
 import '../helpers/geohash_helper.dart';
 import './user.dart';
-
 class Devs with ChangeNotifier {
   final Firestore _db = Firestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -42,17 +41,27 @@ class Devs with ChangeNotifier {
         .document("private")
         .get();
 
-    if (!snap.exists || snap.data["city"] == null) {
+    var addresses = await _getAddresses(snap);
+    if (addresses != null) {
+      Coordinates coordinates = addresses.first.coordinates;
+      _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
+    } else {
       Position pos = await Geolocator().getCurrentPosition();
       _geohash = GeohashHelper(pos.latitude, pos.longitude);
-      return;
     }
+  }
 
-    var addresses =
-        await Geocoder.local.findAddressesFromQuery(snap.data["city"]);
-    Coordinates coordinates = addresses.first.coordinates;
-
-    _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
+  Future<List<Address>> _getAddresses(DocumentSnapshot snap) async {
+    if (!snap.exists || snap.data["city"] == null) return null;
+    try {
+      final addresses = await Geocoder.local.findAddressesFromQuery(
+        snap.data["city"],
+      );
+      if (addresses.length == 0) return null;
+      return addresses;
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<UserData> getUser(int index) async {
