@@ -424,6 +424,7 @@ class User with ChangeNotifier {
 
   List<Friend> friendList(DocumentSnapshot data) {
     List<Friend> friends = [];
+    if (data == null || data.data == null) return [];
     data.data.forEach((String key, dynamic value) {
       friends.add(Friend.fromMap(Map<String, dynamic>.from(value)));
     });
