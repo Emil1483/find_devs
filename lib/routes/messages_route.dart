@@ -26,18 +26,18 @@ class MessagesRoute extends StatelessWidget {
           }
           List<Friend> friends = user.friendList(snap.data);
           if (friends.length == 0) {
-            return Center(
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal: 64.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 64.0),
-                    child: Image.asset("assets/missing_asset.png"),
-                  ),
+                  Image.asset("assets/missing_asset.png"),
                   SizedBox(height: 32.0),
                   Text(
-                    "you have no friends",
+                    "you have not messaged anyone yet",
                     style: Theme.of(context).textTheme.title,
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
