@@ -170,7 +170,7 @@ class _AuthRouteState extends State<AuthRoute>
           ),
           onPressed: () async {
             AuthError error = await user.googleSignIn();
-            if (error == null && false) {
+            if (error == null) {
               _getIn(user);
             } else {
               showAlertDialog(
