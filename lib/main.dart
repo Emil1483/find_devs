@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           canvasColor: Color(0xFF161B21),
           accentColor: Color(0xFFF4A342),
-          indicatorColor: Color(0xFFEFB197),
+          indicatorColor: Colors.pink,
           toggleableActiveColor: Color(0xFFF4A342),
           cardColor: Color(0xFF29323D),
           appBarTheme: AppBarTheme(
@@ -73,6 +73,9 @@ class MyApp extends StatelessWidget {
             overline: TextStyle(
               fontSize: 11.0,
               fontWeight: FontWeight.w900,
+            ),
+            button: TextStyle(
+              fontSize: 15.0,
             ),
           ),
         ),

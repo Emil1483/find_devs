@@ -4,11 +4,13 @@ class GradientButton extends StatelessWidget {
   final Function onPressed;
   final Widget child;
   final Gradient gradient;
+  final EdgeInsets padding;
 
   GradientButton({
     @required this.onPressed,
     @required this.child,
     @required this.gradient,
+    this.padding = const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
   })  : assert(child != null),
         assert(gradient != null);
 
@@ -24,7 +26,7 @@ class GradientButton extends StatelessWidget {
             highlightColor: Theme.of(context).indicatorColor,
             onTap: onPressed,
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
+              padding: padding,
               child: child,
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../providers/user.dart';
 import './chat_route.dart';
+import '../ui_elements/gradient button.dart';
 
 class DevDetailsRoute extends StatelessWidget {
   final UserData userData;
@@ -143,7 +144,7 @@ class DevDetailsRoute extends StatelessWidget {
     return Column(
       children: <Widget>[
         _buildTop(context, userData),
-        SizedBox(height: 24.0),
+        _Buttons(userData.about),
         Text(
           "City/state - ${userData.city}",
           textAlign: TextAlign.center,
@@ -181,6 +182,81 @@ class DevDetailsRoute extends StatelessWidget {
             userData: userData,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _Url {
+  final String url;
+  final String name;
+
+  _Url({
+    @required this.url,
+    @required this.name,
+  });
+}
+
+class _Buttons extends StatefulWidget {
+  final String about;
+
+  _Buttons(this.about);
+
+  @override
+  _ButtonsState createState() => _ButtonsState();
+}
+
+class _ButtonsState extends State<_Buttons> {
+  List<_Url> _urls;
+
+  @override
+  initState() {
+    super.initState();
+    _getUrls();
+  }
+
+  void _getUrls() async {
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      _urls = [
+        _Url(name: "djupvik.tech", url: "https://www.djupvik.tech"),
+      ];
+    });
+  }
+
+  Widget _buildButton(_Url url) {
+    ThemeData theme = Theme.of(context);
+    return GradientButton(
+      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      onPressed: () {},
+      gradient: LinearGradient(
+        colors: [
+          theme.accentColor,
+          theme.indicatorColor,
+        ],
+      ),
+      child: Container(
+        constraints:
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 3),
+        child: Text(
+          url.name,
+          style: theme.textTheme.button,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_urls == null || _urls.length == 0) return Container(height: 24.0);
+    List<Widget> children = _urls.map((_Url url) => _buildButton(url)).toList();
+    return Container(
+      height: 82.0,
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: children,
       ),
     );
   }
