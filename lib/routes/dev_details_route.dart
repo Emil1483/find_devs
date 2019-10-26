@@ -1,6 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/user.dart';
 import './chat_route.dart';
@@ -211,7 +213,7 @@ class _Buttons extends StatefulWidget {
 
 class _ButtonsState extends State<_Buttons>
     with SingleTickerProviderStateMixin {
-  List<_Url> _urls;
+  List<_Url> _urls = [];
   AnimationController _controller;
 
   @override
@@ -231,12 +233,40 @@ class _ButtonsState extends State<_Buttons>
   }
 
   void _getUrls() async {
-    await Future.delayed(Duration(seconds: 1));
+    bool isLetters(String str) => str.toLowerCase() != str.toUpperCase();
+    String lastChar(String str) => str.substring(str.length - 1);
+    String firstChar(String str) => str.substring(0, 1);
+
+    List<String> wordParts = widget.about.split(" ");
+    List<String> words = [];
+    for (int i = 0; i < wordParts.length; i++) {
+      words.addAll(wordParts[i].split("\n"));
+    }
+
+    List<String> possible = [];
+    for (int i = 0; i < words.length; i++) {
+      String word = words[i];
+      if (word.isEmpty) continue;
+      if (!isLetters(lastChar(word))) word = word.substring(0, word.length - 1);
+      if (!isLetters(firstChar(word))) word = word.substring(1);
+      if (word.contains(".")) possible.add(word);
+    }
+
+    for (int i = 0; i < possible.length; i++) {
+      if (_urls.length >= 2) break;
+      String name = possible[i];
+      String url;
+      if (name.substring(0, 4) == "www.") {
+        url = "http://$name";
+      } else if (name.substring(0, 11) != "http://www.") {
+        url = "http://www.$name";
+      }
+      final response = await http.head(url);
+      if (response.statusCode == 200) _urls.add(_Url(url: url, name: name));
+    }
+
     setState(() {
       _controller.forward();
-      _urls = [
-        _Url(name: "djupvik.tech", url: "https://www.djupvik.tech"),
-      ];
     });
   }
 
@@ -252,7 +282,9 @@ class _ButtonsState extends State<_Buttons>
           scale: value,
           child: GradientButton(
             padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            onPressed: () {},
+            onPressed: () async {
+              if (await canLaunch(url.url)) launch(url.url);
+            },
             gradient: LinearGradient(
               colors: [
                 theme.accentColor,
