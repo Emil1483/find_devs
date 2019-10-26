@@ -417,7 +417,7 @@ class User with ChangeNotifier {
 
   Stream<DocumentSnapshot> get friendsStream => _db
       .collection("users")
-      .document(_user.uid)
+      .document("8OOuOZxForSZbAO9t7al7ecZURj2")
       .collection("info")
       .document("friends")
       .snapshots();

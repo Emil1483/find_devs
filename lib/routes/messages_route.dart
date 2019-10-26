@@ -9,6 +9,52 @@ import '../ui_elements/friend_tile.dart';
 class MessagesRoute extends StatelessWidget {
   static const String routeName = "/messages";
 
+  Widget _buildList(BuildContext context) {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return Stack(
+        children: <Widget>[
+          Transform.scale(
+            scale: 1.5,
+            alignment: Alignment(0, -1.5),
+            child: Image.asset(
+              "assets/messages_vertical.png",
+            ),
+          ),
+          Align(
+            alignment: Alignment(0, 0.5),
+            child: Text(
+              "you have no messages yet",
+              style: Theme.of(context).textTheme.title,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          SizedBox(width: 52.0, height: 64.0),
+          Expanded(
+            flex: 3,
+            child: Image.asset("assets/messages_icon.png"),
+          ),
+          Expanded(
+            flex: 4,
+            child: Center(
+              child: Text(
+                "you have no messages yet",
+                style: Theme.of(context).textTheme.title,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     User user = Provider.of<User>(context, listen: false);
@@ -26,21 +72,8 @@ class MessagesRoute extends StatelessWidget {
           }
           List<Friend> friends = user.friendList(snap.data);
           if (friends.length == 0) {
-            return Container(
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 64.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Image.asset("assets/missing_asset.png"),
-                  SizedBox(height: 32.0),
-                  Text(
-                    "you have not messaged anyone yet",
-                    style: Theme.of(context).textTheme.title,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+            return Center(
+              child: _buildList(context),
             );
           }
           return ListView.builder(
