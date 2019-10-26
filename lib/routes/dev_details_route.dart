@@ -258,11 +258,22 @@ class _ButtonsState extends State<_Buttons>
       String url;
       if (name.substring(0, 4) == "www.") {
         url = "http://$name";
-      } else if (name.substring(0, 11) != "http://www.") {
-        url = "http://www.$name";
+      } else if (name.length >= 12 && name.substring(0, 11) == "http://www.") {
+        url = name;
+      } else if (name.length >= 13 && name.substring(0, 12) == "https://www.") {
+        url = name;
+      } else {
+        url = "https://www.$name";
       }
-      final response = await http.head(url);
-      if (response.statusCode == 200) _urls.add(_Url(url: url, name: name));
+      try {
+        final response = await http.head(url);
+        if (response.statusCode == 200)
+          _urls.add(_Url(url: url, name: name));
+        else
+          print("could not find $url. Statuscode: ${response.statusCode}");
+      } catch (e) {
+        print("could not find $url. Error: $e");
+      }
     }
 
     setState(() {
