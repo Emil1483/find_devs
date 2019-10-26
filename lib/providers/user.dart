@@ -322,27 +322,6 @@ class User with ChangeNotifier {
     }
   }
 
-  Map<String, dynamic> _unpack(Map data) {
-    Map<String, dynamic> map = {};
-    for (var entrie in data.entries) {
-      if (entrie.value is Map) {
-        _unpack(entrie.value).forEach((key, value) => map[key] = value);
-        continue;
-      } else {
-        map[entrie.key] = entrie.value;
-      }
-    }
-    return map;
-  }
-
-  Map<String, dynamic> _combine(List<Map<String, dynamic>> data) {
-    Map<String, dynamic> map = {};
-    for (Map<String, dynamic> dataPoint in data) {
-      _unpack(dataPoint).forEach((key, value) => map[key] = value);
-    }
-    return map;
-  }
-
   Future<String> _getCityFromAddresses(List<Address> addresses) async {
     Address address = addresses.first;
     if (address.subAdminArea != null) return address.subAdminArea;
