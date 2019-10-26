@@ -22,10 +22,13 @@ class MessagesRoute extends StatelessWidget {
           ),
           Align(
             alignment: Alignment(0, 0.5),
-            child: Text(
-              "you have no messages yet",
-              style: Theme.of(context).textTheme.title,
-              textAlign: TextAlign.center,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 42.0),
+              child: Text(
+                "you have no messages yet",
+                style: Theme.of(context).textTheme.title,
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ],
