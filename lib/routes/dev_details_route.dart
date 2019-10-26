@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../providers/user.dart';
@@ -33,11 +35,12 @@ class DevDetailsRoute extends StatelessWidget {
   static Widget _buildTop(BuildContext context, UserData userData) {
     bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
     if (portrait) {
+      final bool hasAboutText = userData.about.length > 0;
       return Column(
         children: <Widget>[
           _buildImage(userData),
-          SizedBox(height: 24.0),
-          Text(userData.about, textAlign: TextAlign.center),
+          if (hasAboutText) SizedBox(height: 24.0),
+          if (hasAboutText) Text(userData.about, textAlign: TextAlign.center),
         ],
       );
     } else {
@@ -206,18 +209,31 @@ class _Buttons extends StatefulWidget {
   _ButtonsState createState() => _ButtonsState();
 }
 
-class _ButtonsState extends State<_Buttons> {
+class _ButtonsState extends State<_Buttons>
+    with SingleTickerProviderStateMixin {
   List<_Url> _urls;
+  AnimationController _controller;
 
   @override
   initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    );
     _getUrls();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _getUrls() async {
     await Future.delayed(Duration(seconds: 1));
     setState(() {
+      _controller.forward();
       _urls = [
         _Url(name: "djupvik.tech", url: "https://www.djupvik.tech"),
       ];
@@ -226,24 +242,35 @@ class _ButtonsState extends State<_Buttons> {
 
   Widget _buildButton(_Url url) {
     ThemeData theme = Theme.of(context);
-    return GradientButton(
-      padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      onPressed: () {},
-      gradient: LinearGradient(
-        colors: [
-          theme.accentColor,
-          theme.indicatorColor,
-        ],
-      ),
-      child: Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 3),
-        child: Text(
-          url.name,
-          style: theme.textTheme.button,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, _) {
+        final double value = Curves.easeOutCubic.transform(
+          math.max(_controller.value * 2 - 1, 0),
+        );
+        return Transform.scale(
+          scale: value,
+          child: GradientButton(
+            padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            onPressed: () {},
+            gradient: LinearGradient(
+              colors: [
+                theme.accentColor,
+                theme.indicatorColor,
+              ],
+            ),
+            child: Container(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width / 3),
+              child: Text(
+                url.name,
+                style: theme.textTheme.button,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -251,13 +278,21 @@ class _ButtonsState extends State<_Buttons> {
   Widget build(BuildContext context) {
     if (_urls == null || _urls.length == 0) return Container(height: 24.0);
     List<Widget> children = _urls.map((_Url url) => _buildButton(url)).toList();
-    return Container(
-      height: 82.0,
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: children,
-      ),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, _) {
+        final double value = Curves.easeInOutCubic.transform(
+          math.min(_controller.value * 2, 1),
+        );
+        return Container(
+          height: value * 58.0 + 24,
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: children,
+          ),
+        );
+      },
     );
   }
 }
