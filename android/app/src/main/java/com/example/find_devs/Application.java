@@ -1,4 +1,4 @@
-package com.example.find_devs;
+package tech.djupvik.find_devs;
 
  import io.flutter.app.FlutterApplication;
  import io.flutter.plugin.common.PluginRegistry;

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.find_devs">
+    package="tech.djupvik.find_devs">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -13,7 +13,7 @@
 
     <application
         android:name="com.example.find_devs.Application"
-        android:label="find_devs"
+        android:label="Find Developers"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
