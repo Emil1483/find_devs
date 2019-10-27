@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../providers/chat.dart';
+import '../providers/user.dart';
 import '../ui_elements/message.dart';
 
 class ChatRoute extends StatefulWidget {
@@ -16,9 +17,25 @@ class _ChatRouteState extends State<ChatRoute> {
   TextEditingController _textController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     super.dispose();
+  }
+
+  void _init() async {
+    Chat chat = Provider.of<Chat>(context, listen: false);
+    User user = Provider.of<User>(context, listen: false);
+    UserData newUserData = await user.updateFriend(
+      chat.userData,
+    );
+    if (newUserData == null) return;
+    chat.updatePeerUserData(newUserData);
   }
 
   @override

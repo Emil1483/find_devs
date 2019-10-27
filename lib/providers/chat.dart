@@ -68,7 +68,7 @@ class Friend {
 }
 
 class Chat with ChangeNotifier {
-  final UserData _userData;
+  UserData _userData;
   final User _user;
   String _chatId;
   String _uid;
@@ -88,6 +88,11 @@ class Chat with ChangeNotifier {
 
   UserData get userData => _userData.copy();
   String get uid => _uid;
+
+  void updatePeerUserData(UserData userData) {
+    _userData = userData;
+    notifyListeners();
+  }
 
   Future<MessageData> _getLatestMessage() async {
     QuerySnapshot snap = await Firestore.instance

@@ -418,6 +418,49 @@ class User with ChangeNotifier {
     return count;
   }
 
+  Future<UserData> updateFriend(UserData oldUserData) async {
+    final snap = await _db
+        .collection("users")
+        .document(oldUserData.uid)
+        .collection("info")
+        .document("public")
+        .get();
+
+    final newUserData = UserData.fromMap(snap.data);
+    if (newUserData == oldUserData) return null;
+
+    final friendSnap = await _db
+        .collection("users")
+        .document(_user.uid)
+        .collection("info")
+        .document("friends")
+        .get();
+
+    final friend = Friend.fromMap(
+      Map<String, dynamic>.from(friendSnap.data[oldUserData.uid]),
+    );
+
+    try {
+      await _db
+          .collection("users")
+          .document(_user.uid)
+          .collection("info")
+          .document("friends")
+          .updateData({
+        oldUserData.uid: Friend(
+          latestMessage: friend.latestMessage,
+          seen: friend.seen,
+          userData: newUserData,
+        ).toMap()
+      });
+
+      return newUserData;
+    } catch (e) {
+      print("not updating friendData: $e");
+      return null;
+    }
+  }
+
   AuthError _getErrorType(PlatformException e) {
     //TODO: Make sure this works for iOS!
     switch (e.code) {

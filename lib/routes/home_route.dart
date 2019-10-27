@@ -38,7 +38,8 @@ class HomeRoute extends StatelessWidget {
                 BuildContext context,
                 AsyncSnapshot<DocumentSnapshot> snap,
               ) {
-                if (!snap.hasData || snap.data.data == null) return Icon(Icons.chat);
+                if (!snap.hasData || snap.data.data == null)
+                  return Icon(Icons.chat);
 
                 int notifications = user.notificationCount(
                   user.friendList(snap.data),
