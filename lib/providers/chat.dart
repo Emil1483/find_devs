@@ -95,19 +95,27 @@ class Chat with ChangeNotifier {
   }
 
   Future<MessageData> _getLatestMessage() async {
-    QuerySnapshot snap = await Firestore.instance
-        .collection("messages")
-        .document(_chatId)
-        .collection(_chatId)
-        .orderBy("timestamp", descending: true)
-        .limit(1)
-        .getDocuments();
+    try {
+      QuerySnapshot snap = await Firestore.instance
+          .collection("messages")
+          .document(_chatId)
+          .collection(_chatId)
+          .orderBy("timestamp", descending: true)
+          .limit(1)
+          .getDocuments();
 
-    return MessageData.fromMap(snap.documents.first.data);
+      if (snap.documents.length == 0) return null;
+
+      return MessageData.fromMap(snap.documents.first.data);
+    } catch (e) {
+      print("could not fetch latest message: $e");
+      return null;
+    }
   }
 
   void _updateSeen() async {
     MessageData latestMessage = await _getLatestMessage();
+    if (latestMessage == null) return;
     if (latestMessage.from == _uid) return;
 
     UserData myUserData = await _user.getPublicUserData();

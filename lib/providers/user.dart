@@ -436,6 +436,9 @@ class User with ChangeNotifier {
         .document("friends")
         .get();
 
+    if (!friendSnap.exists) return null;
+    if (!friendSnap.data.containsKey(oldUserData.uid)) return null;
+
     final friend = Friend.fromMap(
       Map<String, dynamic>.from(friendSnap.data[oldUserData.uid]),
     );
