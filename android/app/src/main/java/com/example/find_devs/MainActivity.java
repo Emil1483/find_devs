@@ -1,4 +1,4 @@
-package tech.djupvik.find_devs;
+package com.example.find_devs;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
