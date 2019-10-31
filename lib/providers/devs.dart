@@ -39,6 +39,7 @@ class Devs with ChangeNotifier {
     _wantedLen = 0;
     _working = false;
     _loadedAllUsers = false;
+    _animatedDevs.clear();
     notifyListeners();
 
     if (coordinates != null) {
