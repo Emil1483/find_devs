@@ -59,7 +59,6 @@ class GeohashHelper {
   }
 
   String next() {
-    //TODO optimize
     if (_results.length >= _totalCells) return null;
 
     final rotated = _rotated(_dir);

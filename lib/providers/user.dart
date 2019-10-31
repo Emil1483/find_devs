@@ -465,7 +465,6 @@ class User with ChangeNotifier {
   }
 
   AuthError _getErrorType(PlatformException e) {
-    //TODO: Make sure this works for iOS!
     switch (e.code) {
       case "ERROR_USER_NOT_FOUND":
         return AuthError.UserNotFound;

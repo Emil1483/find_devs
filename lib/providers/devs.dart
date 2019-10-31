@@ -103,6 +103,7 @@ class Devs with ChangeNotifier {
       String hash;
       while (snap == null || snap.data == null || snap.data.length == 0) {
         hash = _geohash.next();
+        // When logging in, devs are not collected
         if (hash == null) return null;
         snap = await ref.document(hash).get();
       }
