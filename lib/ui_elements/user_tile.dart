@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../providers/user.dart';
+import '../providers/devs.dart';
 import '../routes/dev_details_route.dart';
 
 class UserTile extends StatefulWidget {
@@ -22,7 +24,6 @@ class _UserTileState extends State<UserTile>
       vsync: this,
       duration: Duration(milliseconds: 400),
     );
-    _controller.forward();
     super.initState();
   }
 
@@ -135,8 +136,20 @@ class _UserTileState extends State<UserTile>
     );
   }
 
+  void _animate() {
+    Devs devs = Provider.of<Devs>(context);
+    if (!devs.isAnimated(widget.userData.uid)) {
+      _controller.forward();
+      devs.addToAnimated(widget.userData.uid);
+    } else {
+      _controller.value = 1;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _animate();
+
     BorderRadius borderRadius = BorderRadius.circular(8.0);
     return SlideTransition(
       position: Tween<Offset>(

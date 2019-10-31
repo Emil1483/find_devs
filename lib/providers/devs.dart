@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +22,8 @@ class Devs with ChangeNotifier {
   GeohashHelper _geohash;
 
   PublishSubject<String> _lastHash = PublishSubject();
+
+  HashSet<String> _animatedDevs = HashSet();
 
   Devs() {
     init();
@@ -59,6 +63,14 @@ class Devs with ChangeNotifier {
       Position pos = await Geolocator().getCurrentPosition();
       _geohash = GeohashHelper(pos.latitude, pos.longitude);
     }
+  }
+
+  void addToAnimated(String uid) {
+    _animatedDevs.add(uid);
+  }
+
+  bool isAnimated(String uid) {
+    return _animatedDevs.contains(uid);
   }
 
   Future<List<Address>> _getAddresses(DocumentSnapshot snap) async {
