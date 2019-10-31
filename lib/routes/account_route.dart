@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:provider/provider.dart';
 
 import './home_route.dart';
 import '../providers/user.dart';
+import '../providers/devs.dart';
 import '../ui_elements/alert_dialog.dart';
 import '../ui_elements/button.dart';
 
@@ -277,7 +279,9 @@ class _AccountRouteState extends State<AccountRoute> {
 
                 final User user = Provider.of<User>(context, listen: false);
 
-                String city = await user.getCityFromQuery(_userData.city);
+                Address address = await user.getCityFromQuery(_userData.city);
+                String city = user.getCityFromAddress(address);
+
                 if (city == null) {
                   showAlertDialog(
                     context,
@@ -289,6 +293,10 @@ class _AccountRouteState extends State<AccountRoute> {
                 }
                 _userData.city = city;
                 setState(() => _city.text = _userData.city);
+
+                Provider.of<Devs>(context).init(
+                  coordinates: address.coordinates,
+                );
 
                 final bool result = await user.updateUserData(_userData);
                 if (!result) {

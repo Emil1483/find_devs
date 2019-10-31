@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../helpers/geohash_helper.dart';
 import './user.dart';
@@ -18,20 +19,28 @@ class Devs with ChangeNotifier {
 
   GeohashHelper _geohash;
 
+  PublishSubject<String> _lastHash = PublishSubject();
+
   Devs() {
     init();
   }
 
   bool get loadedAll => _loadedAllUsers;
   int get length => _users.length;
+  Stream get lastHash => _lastHash.stream;
   UserData getUserByIndex(int index) => _users[index];
 
-  void init() async {
+  void init({Coordinates coordinates}) async {
     _users.clear();
     _wantedLen = 0;
     _working = false;
     _loadedAllUsers = false;
     notifyListeners();
+
+    if (coordinates != null) {
+      _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
+      return;
+    }
 
     FirebaseUser user = await _auth.currentUser();
     if (user == null) return;
@@ -104,7 +113,7 @@ class Devs with ChangeNotifier {
       String hash;
       while (snap == null || snap.data == null || snap.data.length == 0) {
         hash = _geohash.next();
-        // When logging in, devs are not collected
+        _lastHash.add(hash);
         if (hash == null) return null;
         snap = await ref.document(hash).get();
       }

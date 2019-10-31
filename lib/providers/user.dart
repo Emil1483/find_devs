@@ -322,8 +322,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<String> _getCityFromAddresses(List<Address> addresses) async {
-    Address address = addresses.first;
+  String getCityFromAddress(Address address) {
     if (address.subAdminArea != null) return address.subAdminArea;
     return address.adminArea;
   }
@@ -334,17 +333,17 @@ class User with ChangeNotifier {
       final addresses = await Geocoder.local.findAddressesFromCoordinates(
         Coordinates(pos.latitude, pos.longitude),
       );
-      return _getCityFromAddresses(addresses);
+      return getCityFromAddress(addresses.first);
     } catch (e) {
       print("could not get city: $e");
       return null;
     }
   }
 
-  Future<String> getCityFromQuery(String query) async {
+  Future<Address> getCityFromQuery(String query) async {
     try {
       var addresses = await Geocoder.local.findAddressesFromQuery(query);
-      return _getCityFromAddresses(addresses);
+      return addresses.first;
     } catch (e) {
       print("could not get city from query: $e");
       return null;

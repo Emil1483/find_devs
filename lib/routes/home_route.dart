@@ -80,10 +80,24 @@ class HomeRoute extends StatelessWidget {
           return FutureBuilder(
             future: devs.getUser(index),
             builder: (BuildContext context, AsyncSnapshot<UserData> snapData) {
-              return Container(
-                height: 82.0,
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(),
+              return Column(
+                children: <Widget>[
+                  Container(
+                    height: 82.0,
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  ),
+                  StreamBuilder(
+                    stream: devs.lastHash,
+                    builder: (_, AsyncSnapshot snap) {
+                      return Text(
+                        "on geohash: ${snap.data}",
+                        style: Theme.of(context).textTheme.subhead,
+                      );
+                    },
+                  ),
+                  SizedBox(height: 16.0),
+                ],
               );
             },
           );
