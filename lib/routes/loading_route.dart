@@ -11,7 +11,7 @@ class LoadingRoute extends StatelessWidget {
     Navigator.of(context).pushReplacementNamed(route);
   }
 
-  void autoAuth(BuildContext context, User user) {
+  void _autoAuth(BuildContext context, User user) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (user.waiting) return;
       if (user.user == null) {
@@ -30,7 +30,7 @@ class LoadingRoute extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<User>(
       builder: (context, User user, Widget child) {
-        autoAuth(context, user);
+        _autoAuth(context, user);
         return child;
       },
       child: Scaffold(

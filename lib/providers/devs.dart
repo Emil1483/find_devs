@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 
 import '../helpers/geohash_helper.dart';
 import './user.dart';
+
 class Devs with ChangeNotifier {
   final Firestore _db = Firestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
