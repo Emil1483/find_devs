@@ -340,7 +340,7 @@ class User with ChangeNotifier {
     }
   }
 
-  Future<Address> getCityFromQuery(String query) async {
+  Future<Address> getAddressFromQuery(String query) async {
     try {
       var addresses = await Geocoder.local.findAddressesFromQuery(query);
       return addresses.first;

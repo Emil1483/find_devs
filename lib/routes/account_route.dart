@@ -279,7 +279,7 @@ class _AccountRouteState extends State<AccountRoute> {
 
                 final User user = Provider.of<User>(context, listen: false);
 
-                Address address = await user.getCityFromQuery(_userData.city);
+                Address address = await user.getAddressFromQuery(_userData.city);
 
                 if (address == null) {
                   showAlertDialog(
