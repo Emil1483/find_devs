@@ -280,17 +280,19 @@ class _AccountRouteState extends State<AccountRoute> {
                 final User user = Provider.of<User>(context, listen: false);
 
                 Address address = await user.getCityFromQuery(_userData.city);
-                String city = user.getCityFromAddress(address);
 
-                if (city == null) {
+                if (address == null) {
                   showAlertDialog(
                     context,
-                    title: "Could not find address",
+                    title: "Could not find your city",
                     content: "Please try another",
                   );
                   setState(() => _saving = false);
                   return;
                 }
+
+                String city = user.getCityFromAddress(address);
+
                 _userData.city = city;
                 setState(() => _city.text = _userData.city);
 
