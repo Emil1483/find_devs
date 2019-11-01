@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: Devs()),
       ],
       child: MaterialApp(
-        title: 'Find Devs',
+        title: 'Find Developers',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           brightness: Brightness.dark,
