@@ -6,6 +6,7 @@ import 'package:geohash/geohash.dart';
 
 class GeohashHelper {
   static final int geohashLength = 2;
+  static final int totalCells = pow(32, geohashLength);
   final double lat;
   final double lng;
 
@@ -16,13 +17,13 @@ class GeohashHelper {
 
   double _cellWidth;
   double _cellHeight;
-  int _totalCells;
 
   GeohashHelper(this.lat, this.lng) {
     _cellWidth = 45 / pow(2, _sum(geohashLength, true));
     _cellHeight = 45 / pow(2, _sum(geohashLength, false));
-    _totalCells = pow(32, geohashLength);
   }
+
+  int get numHashes => _results.length;
 
   static String getHash(double lat, double lng) {
     return Geohash.encode(
@@ -59,7 +60,7 @@ class GeohashHelper {
   }
 
   String next() {
-    if (_results.length >= _totalCells) return null;
+    if (_results.length >= totalCells) return null;
 
     final rotated = _rotated(_dir);
     final newPos = _round(_pos + rotated);

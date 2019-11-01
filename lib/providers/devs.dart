@@ -22,6 +22,7 @@ class Devs with ChangeNotifier {
   GeohashHelper _geohash;
 
   PublishSubject<String> _lastHash = PublishSubject();
+  PublishSubject<String> _totalHashes = PublishSubject();
 
   HashSet<String> _animatedDevs = HashSet();
 
@@ -31,7 +32,11 @@ class Devs with ChangeNotifier {
 
   bool get loadedAll => _loadedAllUsers;
   int get length => _users.length;
+
   Stream get lastHash => _lastHash.stream;
+  Stream get totalHashes => _totalHashes.stream;
+  int get maxHashes => GeohashHelper.totalCells;
+  
   UserData getUserByIndex(int index) => _users[index];
 
   void init({Coordinates coordinates}) async {
@@ -40,6 +45,7 @@ class Devs with ChangeNotifier {
     _working = false;
     _loadedAllUsers = false;
     _animatedDevs.clear();
+    _totalHashes.add("0");
     notifyListeners();
 
     if (coordinates != null) {
@@ -127,6 +133,7 @@ class Devs with ChangeNotifier {
       while (snap == null || snap.data == null || snap.data.length == 0) {
         hash = _geohash.next();
         _lastHash.add(hash);
+        _totalHashes.add(_geohash.numHashes.toString());
         if (hash == null) return null;
         snap = await ref.document(hash).get();
       }

@@ -88,11 +88,14 @@ class HomeRoute extends StatelessWidget {
                     child: CircularProgressIndicator(),
                   ),
                   StreamBuilder(
-                    stream: devs.lastHash,
+                    stream: devs.totalHashes,
                     builder: (_, AsyncSnapshot snap) {
+                      ThemeData theme = Theme.of(context);
                       return Text(
-                        "on geohash: ${snap.data}",
-                        style: Theme.of(context).textTheme.subhead,
+                        "on geohash ${snap.data ?? 0} of ${devs.maxHashes}",
+                        style: theme.textTheme.subhead.copyWith(
+                          color: theme.disabledColor,
+                        ),
                       );
                     },
                   ),
