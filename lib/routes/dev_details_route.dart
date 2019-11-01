@@ -247,8 +247,8 @@ class _ButtonsState extends State<_Buttons>
     for (int i = 0; i < words.length; i++) {
       String word = words[i];
       if (word.isEmpty) continue;
-      if (!isLetters(lastChar(word))) word = word.substring(0, word.length - 1);
-      if (!isLetters(firstChar(word))) word = word.substring(1);
+      if (word.isNotEmpty && !isLetters(lastChar(word))) word = word.substring(0, word.length - 1);
+      if (word.isNotEmpty && !isLetters(firstChar(word))) word = word.substring(1);
       if (word.contains(".")) possible.add(word);
     }
 
