@@ -154,9 +154,7 @@ I may update our Privacy Policy from time to time. Thus, you are advised to revi
                 ),
                 TextSpan(
                   text: """
-If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at emil14833@gmail.com.
-
-""",
+If you have any questions or suggestions about my Privacy Policy, do not hesitate to contact me at emil14833@gmail.com.""",
                 ),
               ],
             ),
