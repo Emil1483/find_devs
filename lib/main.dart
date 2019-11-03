@@ -9,6 +9,7 @@ import './routes/projects_route.dart';
 import './routes/account_route.dart';
 import './routes/chat_route.dart';
 import './routes/messages_route.dart';
+import './routes/privacy_route.dart';
 import './providers/user.dart';
 import './providers/devs.dart';
 import './providers/chat.dart';
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
           AccountRoute.routeName: (_) => AccountRoute(),
           ProjectsRoute.routeName: (_) => ProjectsRoute(),
           MessagesRoute.routeName: (_) => MessagesRoute(),
+          PrivacyRoute.routeName: (_) => PrivacyRoute(),
           ChatRoute.routeName: (BuildContext context) {
             UserData userData = ModalRoute.of(context).settings.arguments;
 

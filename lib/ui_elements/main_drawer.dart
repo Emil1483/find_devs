@@ -5,6 +5,7 @@ import '../providers/user.dart';
 import '../routes/account_route.dart';
 import '../routes/auth_route.dart';
 import '../routes/projects_route.dart';
+import '../routes/privacy_route.dart';
 import '../routes/home_route.dart';
 
 class MainDrawer extends StatelessWidget {
@@ -73,7 +74,9 @@ class MainDrawer extends StatelessWidget {
             ),
             _buildListTile(
               context,
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed(PrivacyRoute.routeName);
+              },
               text: "Privacy Policy",
             ),
             _buildListTile(
