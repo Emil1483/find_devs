@@ -84,6 +84,7 @@ flutter:
    - assets/glasses.png
    - assets/messages_icon.png
    - assets/messages_vertical.png
+   - assets/broken.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
