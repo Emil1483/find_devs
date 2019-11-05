@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:rxdart/rxdart.dart';
@@ -16,6 +17,7 @@ class Devs with ChangeNotifier {
 
   List<UserData> _users = [];
   int _wantedLen = 0;
+  bool _error = false;
   bool _working = false;
   bool _loadedAllUsers = false;
 
@@ -36,25 +38,31 @@ class Devs with ChangeNotifier {
   Stream get lastHash => _lastHash.stream;
   Stream get totalHashes => _totalHashes.stream;
   int get maxHashes => GeohashHelper.totalCells;
-  
+  bool get error => _error;
+
   UserData getUserByIndex(int index) => _users[index];
 
   void init({Coordinates coordinates}) async {
+    GeohashHelper geohashHelper = await _getGeohashHelper(coordinates);
+    if (geohashHelper != null) _geohash = geohashHelper;
+
     _users.clear();
     _wantedLen = 0;
     _working = false;
     _loadedAllUsers = false;
+    _error = false;
     _animatedDevs.clear();
     _totalHashes.add("0");
     notifyListeners();
+  }
 
+  Future<GeohashHelper> _getGeohashHelper(Coordinates coordinates) async {
     if (coordinates != null) {
-      _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
-      return;
+      return GeohashHelper(coordinates.latitude, coordinates.longitude);
     }
 
     FirebaseUser user = await _auth.currentUser();
-    if (user == null) return;
+    if (user == null) return null;
     DocumentSnapshot snap = await _db
         .collection("users")
         .document(user.uid)
@@ -65,10 +73,10 @@ class Devs with ChangeNotifier {
     var addresses = await _getAddresses(snap);
     if (addresses != null) {
       Coordinates coordinates = addresses.first.coordinates;
-      _geohash = GeohashHelper(coordinates.latitude, coordinates.longitude);
+      return GeohashHelper(coordinates.latitude, coordinates.longitude);
     } else {
       Position pos = await Geolocator().getCurrentPosition();
-      _geohash = GeohashHelper(pos.latitude, pos.longitude);
+      return GeohashHelper(pos.latitude, pos.longitude);
     }
   }
 
@@ -126,31 +134,34 @@ class Devs with ChangeNotifier {
 
   Future<List<UserData>> _moreUsers() async {
     while (_geohash == null) await Future.delayed(Duration(milliseconds: 500));
-    try {
-      final ref = _db.collection("places");
-      DocumentSnapshot snap;
-      String hash;
-      while (snap == null || snap.data == null || snap.data.length == 0) {
-        hash = _geohash.next();
-        _lastHash.add(hash);
-        _totalHashes.add(_geohash.numHashes.toString());
-        if (hash == null) return null;
-        snap = await ref.document(hash).get();
-      }
-      List<UserData> result = [];
-      FirebaseUser firebaseUser = await _auth.currentUser();
-      String uid = firebaseUser.uid;
-      snap.data.forEach((key, val) {
-        if (uid != key) {
-          Map<String, dynamic> data = Map<String, dynamic>.from(val);
-          result.add(UserData.fromMap(data, uid: key));
-        }
-      });
 
-      return result;
-    } catch (e) {
-      print(e);
-      return [];
+    final ref = _db.collection("places");
+    DocumentSnapshot snap;
+    String hash;
+    while (snap == null || snap.data == null || snap.data.length == 0) {
+      hash = _geohash.next();
+      _lastHash.add(hash);
+      _totalHashes.add(_geohash.numHashes.toString());
+      if (hash == null) return null;
+      try {
+        snap = await ref.document(hash).get();
+      } on PlatformException catch (e) {
+        print(e);
+        _error = true;
+        notifyListeners();
+        return null;
+      }
     }
+    List<UserData> result = [];
+    FirebaseUser firebaseUser = await _auth.currentUser();
+    String uid = firebaseUser.uid;
+    snap.data.forEach((key, val) {
+      if (uid != key) {
+        Map<String, dynamic> data = Map<String, dynamic>.from(val);
+        result.add(UserData.fromMap(data, uid: key));
+      }
+    });
+
+    return result;
   }
 }

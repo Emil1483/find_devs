@@ -9,9 +9,17 @@ import '../ui_elements/user_tile.dart';
 import '../providers/devs.dart';
 import '../providers/user.dart';
 import './messages_route.dart';
+import './error_route.dart';
 
-class HomeRoute extends StatelessWidget {
+class HomeRoute extends StatefulWidget {
   static const String routeName = "/home";
+
+  @override
+  _HomeRouteState createState() => _HomeRouteState();
+}
+
+class _HomeRouteState extends State<HomeRoute> {
+  bool _navigated = false;
 
   StaggeredTile _staggeredTileBuilder(int index, BuildContext context) {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
@@ -22,11 +30,23 @@ class HomeRoute extends StatelessWidget {
     return StaggeredTile.fit(1);
   }
 
+  void _navigateToErrorRoute(BuildContext context) async {
+    await Future.delayed(Duration());
+    if (_navigated) return;
+    _navigated = true;
+    Navigator.of(context).pushReplacementNamed(ErrorRoute.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
-    Devs devs = Provider.of<Devs>(context);
     User user = Provider.of<User>(context, listen: false);
+    Devs devs = Provider.of<Devs>(context);
     bool portrait = MediaQuery.of(context).orientation == Orientation.portrait;
+
+    if (devs.error && mounted) {
+      _navigateToErrorRoute(context);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Find Developers"),
