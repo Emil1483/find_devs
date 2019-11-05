@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../providers/chat.dart';
 import '../providers/user.dart';
 import '../ui_elements/message.dart';
+import '../ui_elements/alert_dialog.dart';
 
 class ChatRoute extends StatefulWidget {
   static const String routeName = "/chat";
@@ -104,9 +106,24 @@ class _ChatRouteState extends State<ChatRoute> {
                 IconButton(
                   color: Theme.of(context).accentColor,
                   icon: Icon(Icons.send),
-                  onPressed: () {
+                  onPressed: () async {
                     if (_textController.text.isEmpty) return;
-                    chat.sendMessage(_textController.text);
+                    final connectivityResult =
+                        await Connectivity().checkConnectivity();
+                    if (connectivityResult == ConnectivityResult.none) {
+                      showAlertDialog(
+                        context,
+                        title: "Error",
+                        content: "Check your internet",
+                      );
+                      return;
+                    }
+                    try {
+                      chat.sendMessage(_textController.text);
+                    } catch (e) {
+                      print(e);
+                      return;
+                    }
                     _textController.clear();
                   },
                 ),

@@ -34,7 +34,10 @@ class _HomeRouteState extends State<HomeRoute> {
     await Future.delayed(Duration());
     if (_navigated) return;
     _navigated = true;
-    Navigator.of(context).pushReplacementNamed(ErrorRoute.routeName);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      ErrorRoute.routeName,
+      (_) => false,
+    );
   }
 
   @override
