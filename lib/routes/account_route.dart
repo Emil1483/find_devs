@@ -3,6 +3,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:provider/provider.dart';
 
 import './home_route.dart';
+import './error_route.dart';
 import '../providers/user.dart';
 import '../providers/devs.dart';
 import '../ui_elements/alert_dialog.dart';
@@ -279,7 +280,8 @@ class _AccountRouteState extends State<AccountRoute> {
 
                 final User user = Provider.of<User>(context, listen: false);
 
-                Address address = await user.getAddressFromQuery(_userData.city);
+                Address address =
+                    await user.getAddressFromQuery(_userData.city);
 
                 if (address == null) {
                   showAlertDialog(
@@ -323,6 +325,29 @@ class _AccountRouteState extends State<AccountRoute> {
   Widget build(BuildContext context) {
     if (_error) {
       bool back = Navigator.of(context).canPop();
+      return ErrorRoute(
+        errorMessage: "Could not load your settings",
+        buttonChild: _buildLoadingText(
+          back ? "Back to Homepage" : "Try Again",
+          _loading,
+        ),
+        buttonOnPressed: (_) async {
+          if (back)
+            Navigator.pop(context);
+          else {
+            setState(() => _loading = true);
+            await Future.delayed(Duration(milliseconds: 400));
+            if (await _getUser()) {
+              setState(() {
+                _loading = false;
+                _error = false;
+              });
+            } else
+              setState(() => _loading = false);
+          }
+        },
+      );
+
       TextTheme theme = Theme.of(context).textTheme;
       return Scaffold(
         body: Center(

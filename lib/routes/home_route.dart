@@ -34,8 +34,17 @@ class _HomeRouteState extends State<HomeRoute> {
     await Future.delayed(Duration());
     if (_navigated) return;
     _navigated = true;
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      ErrorRoute.routeName,
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (_) => ErrorRoute(
+          errorMessage: "Something went wrong",
+          buttonChild: Text("Try Again"),
+          buttonOnPressed: (BuildContext context) {
+            Provider.of<Devs>(context).init();
+            Navigator.of(context).pushReplacementNamed(HomeRoute.routeName);
+          },
+        ),
+      ),
       (_) => false,
     );
   }
