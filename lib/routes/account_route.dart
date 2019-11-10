@@ -347,47 +347,6 @@ class _AccountRouteState extends State<AccountRoute> {
           }
         },
       );
-
-      TextTheme theme = Theme.of(context).textTheme;
-      return Scaffold(
-        body: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                _buildLogo(),
-                Text("Oops!", style: theme.display2),
-                SizedBox(height: 12),
-                Text("Could not load your settings", style: theme.headline),
-                SizedBox(height: 8),
-                Text(
-                  "Check your internet",
-                  style: theme.body1,
-                ),
-                SizedBox(height: 16),
-                MainButton(
-                  onPressed: () async {
-                    if (back)
-                      Navigator.pop(context);
-                    else {
-                      setState(() => _loading = true);
-                      await Future.delayed(Duration(milliseconds: 400));
-                      if (await _getUser()) {
-                        setState(() {
-                          _loading = false;
-                          _error = false;
-                        });
-                      } else
-                        setState(() => _loading = false);
-                    }
-                  },
-                  child: _buildLoadingText(
-                      back ? "Back to Homepage" : "Try Again", _loading),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
     }
     if (_loading)
       return Scaffold(
