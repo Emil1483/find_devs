@@ -153,7 +153,12 @@ class Devs with ChangeNotifier {
       }
     }
     List<UserData> result = [];
-    FirebaseUser firebaseUser = await _auth.currentUser();
+    FirebaseUser firebaseUser;
+    while (firebaseUser == null) {
+      firebaseUser = await _auth.currentUser();
+      if (firebaseUser == null)
+        await Future.delayed(Duration(milliseconds: 500));
+    }
     String uid = firebaseUser.uid;
     snap.data.forEach((key, val) {
       if (uid != key) {
