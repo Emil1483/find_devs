@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "641305422248-3cdk73g42jk4rpj6bei1qcvdptjduvrq.apps.googleusercontent.com",
+          "client_id": "641305422248-orafib1shme23cas74pmh3skrt21q4qd.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "tech.djupvik.find_devs",
-            "certificate_hash": "b95a06098e0286faa9a4f2b99a432b04d26ba788"
+            "certificate_hash": "48cc3fb277e52e3bc923af64dac22e8ba789494b"
           }
         },
         {
