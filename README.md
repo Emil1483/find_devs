@@ -1,16 +1,5 @@
 # find_devs
 
-A new Flutter project.
+Find Developers is an app for software developers for finding other software developers. Through my app, you will gain new friends, and ultimately, business partners with a similar passion for programming.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+However, although the app is fully functional, I am not planning on uploading it to the Play Store anytime soon, as I have no interest in marketing it.
