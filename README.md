@@ -1,4 +1,4 @@
-# find_devs
+# Find Developers
 
 Find Developers is an app for software developers for finding other software developers. Through my app, you will gain new friends, and ultimately, business partners with a similar passion for programming.
 
